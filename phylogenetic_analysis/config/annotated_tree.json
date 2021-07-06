@@ -1,0 +1,12 @@
+{"colors": 
+    {"GA": "#8FBCBB",
+     "traveler": "#D070B9", 
+        "19A": "#825665", "19B": "#735682", 
+        "20A": "#7D95AC", "20B": "#9CC8A8", "20C": "#FAEE95", "20D": "#fd7b25",
+        "nan": "#ffffff", "base": "#575c66", "20E (EU1)": "#575c66"}, 
+    "labels": {},
+    "max_date": "2020.2472677595629",
+    "effects": "[path_effects.Stroke(linewidth=0.5, foreground=plot_config['colors']['base'])]",
+    "deprioritize_nodes": "['NODE_0001044']",
+	"out_name": "figures/figure2",
+    "time_series_plot_vars": ["date_midbranch"]}

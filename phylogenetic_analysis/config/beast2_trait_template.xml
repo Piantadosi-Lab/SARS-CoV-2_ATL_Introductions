@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="" version="2.6">
+
+
+<data id="<!-- ALN_NAME -->" spec="Alignment" name="alignment">
+    <!-- SEQUENCE_BLOCK -->
+</data>
+
+<map name="Uniform" >beast.math.distributions.Uniform</map>
+<map name="Exponential" >beast.math.distributions.Exponential</map>
+<map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
+<map name="Normal" >beast.math.distributions.Normal</map>
+<map name="Beta" >beast.math.distributions.Beta</map>
+<map name="Gamma" >beast.math.distributions.Gamma</map>
+<map name="LaplaceDistribution" >beast.math.distributions.LaplaceDistribution</map>
+<map name="prior" >beast.math.distributions.Prior</map>
+<map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
+<map name="OneOnX" >beast.math.distributions.OneOnX</map>
+
+<run id="mcmc" spec="MCMC" chainLength="100000000">
+    <state id="state" spec="State" storeEvery="5000">
+        <tree id="Tree.t:<!-- ALN_NAME -->" spec="beast.evolution.tree.Tree" name="stateNode">
+            <trait id="dateTrait.t:<!-- ALN_NAME -->" spec="beast.evolution.tree.TraitSet" traitname="date" value="<!-- TIME_BLOCK -->">
+                <taxa id="TaxonSet.<!-- ALN_NAME -->" spec="TaxonSet">
+                    <alignment idref="<!-- ALN_NAME -->"/>
+                </taxa>
+            </trait>
+            <taxonset idref="TaxonSet.<!-- ALN_NAME -->"/>
+        </tree>
+        <!-- initial parameter values -->
+        <parameter id="proportionInvariant.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.8</parameter>
+        <parameter id="gammaShape.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        <parameter id="ePopSize.t:<!-- ALN_NAME -->" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        <parameter id="growthRate.t:<!-- ALN_NAME -->" spec="parameter.RealParameter" name="stateNode">0.0</parameter>
+        <parameter id="kappa.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" lower="0.0" name="stateNode">5.0</parameter>
+        <parameter id="ucldMean.c:<!-- ALN_NAME -->" spec="parameter.RealParameter" name="stateNode">0.002</parameter>
+        <parameter id="ucldStdev.c:<!-- ALN_NAME -->" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.1</parameter>
+        <stateNode id="rateCategories.c:<!-- ALN_NAME -->" spec="parameter.IntegerParameter" dimension="1808">1</stateNode>
+        <parameter id="freqParameter.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+        <stateNode id="rateIndicator.s:<!-- TRAIT_NAME -->" spec="parameter.BooleanParameter" dimension="<!-- N_TRAIT_DIMENSIONS -->">true</stateNode>
+        <parameter id="relativeGeoRates.s:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" dimension="<!-- N_TRAIT_DIMENSIONS -->" name="stateNode">1.0</parameter>
+        <parameter id="traitClockRate.c:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+    </state>
+    <!-- random starting tree -->
+    <init id="RandomTree.t:<!-- ALN_NAME -->" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:<!-- ALN_NAME -->" taxa="@<!-- ALN_NAME -->">
+        <populationModel id="ConstantPopulation0.t:<!-- ALN_NAME -->" spec="ConstantPopulation">
+            <parameter id="randomPopSize.t:<!-- ALN_NAME -->" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+        </populationModel>
+    </init>
+    <!-- posterior distribution -->
+    <distribution id="posterior" spec="util.CompoundDistribution">
+        <!-- prior distribution -->
+        <distribution id="prior" spec="util.CompoundDistribution">
+            <!-- tree priors -->
+            <distribution id="CoalescentExponential.t:<!-- ALN_NAME -->" spec="Coalescent">
+                <populationModel id="ExponentialGrowth.t:<!-- ALN_NAME -->" spec="ExponentialGrowth" growthRate="@growthRate.t:<!-- ALN_NAME -->" popSize="@ePopSize.t:<!-- ALN_NAME -->"/>
+                <treeIntervals id="TreeIntervals.t:<!-- ALN_NAME -->" spec="TreeIntervals" tree="@Tree.t:<!-- ALN_NAME -->"/>
+            </distribution>
+            <prior id="ePopSizePrior.t:<!-- ALN_NAME -->" name="distribution" x="@ePopSize.t:<!-- ALN_NAME -->">
+                <LogNormal id="LogNormalDistributionModel.1" name="distr">
+                    <parameter id="RealParameter.7" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                    <parameter id="RealParameter.8" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">2.0</parameter>
+                </LogNormal>
+            </prior>
+            <prior id="FrequenciesPrior.s:<!-- ALN_NAME -->" name="distribution" x="@freqParameter.s:<!-- ALN_NAME -->">
+                <Uniform id="Uniform.3" name="distr"/>
+            </prior>
+            <prior id="GammaShapePrior.s:<!-- ALN_NAME -->" name="distribution" x="@gammaShape.s:<!-- ALN_NAME -->">
+                <Exponential id="Exponential.0" name="distr">
+                    <parameter id="RealParameter.0" spec="parameter.RealParameter" estimate="false" name="mean">1.0</parameter>
+                </Exponential>
+            </prior>
+            <prior id="GrowthRatePrior.t:<!-- ALN_NAME -->" name="distribution" x="@growthRate.t:<!-- ALN_NAME -->">
+                <LaplaceDistribution id="LaplaceDistribution.0" name="distr">
+                    <parameter id="RealParameter.1" spec="parameter.RealParameter" estimate="false" name="mu">0</parameter>
+                    <parameter id="RealParameter.2" spec="parameter.RealParameter" estimate="false" name="scale">10.0</parameter>
+                </LaplaceDistribution>
+            </prior>
+            <prior id="KappaPrior.s:<!-- ALN_NAME -->" name="distribution" x="@kappa.s:<!-- ALN_NAME -->">
+                <LogNormal id="LogNormalDistributionModel.2" name="distr">
+                    <parameter id="RealParameter.9" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
+                    <parameter id="RealParameter.10" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
+                </LogNormal>
+            </prior>
+            <prior id="PropInvariantPrior.s:<!-- ALN_NAME -->" name="distribution" x="@proportionInvariant.s:<!-- ALN_NAME -->">
+                <Uniform id="Uniform.2" name="distr"/>
+            </prior>
+            <prior id="MeanRatePrior.c:<!-- ALN_NAME -->" name="distribution" x="@ucldMean.c:<!-- ALN_NAME -->">
+                <Normal id="Normal.1" name="distr">
+                    <parameter id="RealParameter.14" spec="parameter.RealParameter" estimate="false" name="mean">0.001</parameter>
+                    <parameter id="RealParameter.15" spec="parameter.RealParameter" estimate="false" name="sigma">1.0E-4</parameter>
+                </Normal>
+            </prior>
+            <prior id="ucldStdevPrior.c:<!-- ALN_NAME -->" name="distribution" x="@ucldStdev.c:<!-- ALN_NAME -->">
+                <Exponential id="Exponential.1" name="distr">
+                    <parameter id="RealParameter.16" spec="parameter.RealParameter" estimate="false" name="mean">0.33</parameter>
+                </Exponential>
+            </prior>
+            <!-- trait priors -->
+            <prior id="nonZeroRatePrior.s:<!-- TRAIT_NAME -->" name="distribution">
+                <x id="nonZeroRates.s:<!-- TRAIT_NAME -->" spec="util.Sum">
+                    <arg idref="rateIndicator.s:<!-- TRAIT_NAME -->"/>
+                </x>
+                <distr id="Poisson.2" spec="beast.math.distributions.Poisson" offset="<!-- N_TRAITS_LESS_1 -->">
+                    <parameter id="RealParameter.52" spec="parameter.RealParameter" estimate="false" name="lambda"> <!-- N_TRAIT_DIMENSIONS/4 -->   </parameter>
+                </distr>
+            </prior>
+            <prior id="relativeGeoRatesPrior.s:<!-- TRAIT_NAME -->" name="distribution" x="@relativeGeoRates.s:<!-- TRAIT_NAME -->">
+                <Gamma id="Gamma.8" name="distr">
+                    <parameter id="RealParameter.50" spec="parameter.RealParameter" estimate="false" name="alpha">1.0</parameter>
+                    <parameter id="RealParameter.51" spec="parameter.RealParameter" estimate="false" name="beta">1.0</parameter>
+                </Gamma>
+            </prior>
+            <prior id="geoclockPrior.c:<!-- TRAIT_NAME -->" name="distribution" x="@traitClockRate.c:<!-- TRAIT_NAME -->">
+                <Gamma id="Gamma.7" name="distr">
+                    <parameter id="RealParameter.48" spec="parameter.RealParameter" estimate="false" name="alpha">0.001</parameter>
+                    <parameter id="RealParameter.49" spec="parameter.RealParameter" estimate="false" name="beta">1000.0</parameter>
+                </Gamma>
+            </prior>
+        </distribution>
+        <!-- tree likelihood -->
+        <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+            <distribution id="treeLikelihood.<!-- ALN_NAME -->" spec="ThreadedTreeLikelihood" data="@<!-- ALN_NAME -->" tree="@Tree.t:<!-- ALN_NAME -->">
+                <siteModel id="SiteModel.s:<!-- ALN_NAME -->" spec="SiteModel" gammaCategoryCount="4" proportionInvariant="@proportionInvariant.s:<!-- ALN_NAME -->" shape="@gammaShape.s:<!-- ALN_NAME -->">
+                    <parameter id="mutationRate.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" estimate="false" name="mutationRate">1.0</parameter>
+                    <substModel id="hky.s:<!-- ALN_NAME -->" spec="HKY" kappa="@kappa.s:<!-- ALN_NAME -->">
+                        <frequencies id="estimatedFreqs.s:<!-- ALN_NAME -->" spec="Frequencies" frequencies="@freqParameter.s:<!-- ALN_NAME -->"/>
+                    </substModel>
+                </siteModel>
+                <branchRateModel id="RelaxedClock.c:<!-- ALN_NAME -->" spec="beast.evolution.branchratemodel.UCRelaxedClockModel" clock.rate="@ucldMean.c:<!-- ALN_NAME -->" rateCategories="@rateCategories.c:<!-- ALN_NAME -->" tree="@Tree.t:<!-- ALN_NAME -->">
+                    <LogNormal id="LogNormalDistributionModel.c:<!-- ALN_NAME -->" S="@ucldStdev.c:<!-- ALN_NAME -->" meanInRealSpace="true" name="distr">
+                        <parameter id="RealParameter.11" spec="parameter.RealParameter" estimate="false" lower="0.0" name="M" upper="1.0">1.0</parameter>
+                    </LogNormal>
+                </branchRateModel>
+            </distribution>
+            <!-- trait likelihood -->
+            <distribution id="traitedtreeLikelihood.<!-- TRAIT_NAME -->" spec="AncestralStateTreeLikelihood" tag="<!-- TRAIT_NAME -->" tree="@Tree.t:<!-- ALN_NAME -->">
+                <data id="<!-- TRAIT_NAME -->" spec="AlignmentFromTrait">
+                    <traitSet id="traitSet.<!-- TRAIT_NAME -->" spec="beast.evolution.tree.TraitSet" taxa="@TaxonSet.<!-- ALN_NAME -->" traitname="discrete"><!-- TRAIT_BLOCK -->
+                    </traitSet>
+                    <userDataType id="traitDataType.<!-- TRAIT_NAME -->" spec="beast.evolution.datatype.UserDataType" codeMap="<!-- TRAIT_CODE_MAP -->" codelength="-1" states="<!-- N_TRAITS -->"/>
+                </data>
+                <siteModel id="geoSiteModel.s:<!-- TRAIT_NAME -->" spec="SiteModel" gammaCategoryCount="1">
+                    <parameter id="mutationRate.s:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" estimate="false" name="mutationRate">1.0</parameter>
+                    <parameter id="gammaShape.s:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" estimate="false" name="shape">1.0</parameter>
+                    <parameter id="proportionInvariant.s:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+                    <substModel id="svs.s:<!-- TRAIT_NAME -->" spec="SVSGeneralSubstitutionModel" rateIndicator="@rateIndicator.s:<!-- TRAIT_NAME -->" rates="@relativeGeoRates.s:<!-- TRAIT_NAME -->" symmetric="true">
+                        <frequencies id="traitfreqs.s:<!-- TRAIT_NAME -->" spec="Frequencies">
+                            <parameter id="traitfrequencies.s:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" dimension="<!-- N_TRAITS -->" name="frequencies"><!-- TRAIT_FREQS --></parameter>
+                        </frequencies>
+                    </substModel>
+                </siteModel>
+                <branchRateModel id="StrictClockModel.c:<!-- TRAIT_NAME -->" spec="beast.evolution.branchratemodel.StrictClockModel" clock.rate="@traitClockRate.c:<!-- TRAIT_NAME -->"/>
+            </distribution>
+        </distribution>
+    </distribution>
+
+    <!-- operators -->
+    <!-- tree opeartors -->
+    <operator id="proportionInvariantScaler.s:<!-- ALN_NAME -->" spec="ScaleOperator" parameter="@proportionInvariant.s:<!-- ALN_NAME -->" scaleFactor="0.5" weight="0.1"/>
+    <operator id="gammaShapeScaler.s:<!-- ALN_NAME -->" spec="ScaleOperator" parameter="@gammaShape.s:<!-- ALN_NAME -->" scaleFactor="0.3" weight="0.1"/>
+    <operator id="CoalescentExponentialTreeScaler.t:<!-- ALN_NAME -->" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:<!-- ALN_NAME -->" weight="3.0"/>
+    <operator id="CoalescentExponentialTreeRootScaler.t:<!-- ALN_NAME -->" spec="ScaleOperator" rootOnly="true" scaleFactor="0.5" tree="@Tree.t:<!-- ALN_NAME -->" weight="3.0"/>
+    <operator id="CoalescentExponentialUniformOperator.t:<!-- ALN_NAME -->" spec="Uniform" tree="@Tree.t:<!-- ALN_NAME -->" weight="30.0"/>
+    <operator id="CoalescentExponentialSubtreeSlide.t:<!-- ALN_NAME -->" spec="SubtreeSlide" tree="@Tree.t:<!-- ALN_NAME -->" weight="15.0"/>
+    <operator id="CoalescentExponentialNarrow.t:<!-- ALN_NAME -->" spec="Exchange" tree="@Tree.t:<!-- ALN_NAME -->" weight="15.0"/>
+    <operator id="CoalescentExponentialWide.t:<!-- ALN_NAME -->" spec="Exchange" isNarrow="false" tree="@Tree.t:<!-- ALN_NAME -->" weight="3.0"/>
+    <operator id="CoalescentExponentialWilsonBalding.t:<!-- ALN_NAME -->" spec="WilsonBalding" tree="@Tree.t:<!-- ALN_NAME -->" weight="3.0"/>
+    <operator id="ePopSizeScaler.t:<!-- ALN_NAME -->" spec="ScaleOperator" parameter="@ePopSize.t:<!-- ALN_NAME -->" scaleFactor="0.1" weight="8.0"/>
+    <operator id="GrowthRateRandomWalk.t:<!-- ALN_NAME -->" spec="RealRandomWalkOperator" parameter="@growthRate.t:<!-- ALN_NAME -->" weight="6.0" windowSize="2.0"/>
+    <operator id="KappaScaler.s:<!-- ALN_NAME -->" spec="ScaleOperator" parameter="@kappa.s:<!-- ALN_NAME -->" scaleFactor="0.5" weight="0.1"/>
+    <!-- clock operators -->
+    <operator id="ucldMeanScaler.c:<!-- ALN_NAME -->" spec="ScaleOperator" parameter="@ucldMean.c:<!-- ALN_NAME -->" scaleFactor="0.75" weight="2.0"/>
+    <operator id="ucldStdevScaler.c:<!-- ALN_NAME -->" spec="ScaleOperator" parameter="@ucldStdev.c:<!-- ALN_NAME -->" scaleFactor="0.5" weight="2.0"/>
+    <operator id="CategoriesRandomWalk.c:<!-- ALN_NAME -->" spec="IntRandomWalkOperator" parameter="@rateCategories.c:<!-- ALN_NAME -->" weight="10.0" windowSize="1"/>
+    <operator id="CategoriesSwapOperator.c:<!-- ALN_NAME -->" spec="SwapOperator" intparameter="@rateCategories.c:<!-- ALN_NAME -->" weight="10.0"/>
+    <operator id="CategoriesUniform.c:<!-- ALN_NAME -->" spec="UniformOperator" parameter="@rateCategories.c:<!-- ALN_NAME -->" weight="10.0"/>
+    <operator id="relaxedUpDownOperator.c:<!-- ALN_NAME -->" spec="UpDownOperator" scaleFactor="0.75" weight="3.0">
+        <up idref="ucldMean.c:<!-- ALN_NAME -->"/>
+        <down idref="Tree.t:<!-- ALN_NAME -->"/>
+    </operator>
+    <!-- trait operators -->
+    <operator id="georateScaler.s:<!-- TRAIT_NAME -->" spec="ScaleOperator" parameter="@relativeGeoRates.s:<!-- TRAIT_NAME -->" scaleAllIndependently="true" scaleFactor="0.99" weight="30.0"/>
+    <operator id="indicatorFlip.s:<!-- TRAIT_NAME -->" spec="BitFlipOperator" parameter="@rateIndicator.s:<!-- TRAIT_NAME -->" weight="30.0"/>
+    <operator id="geoMuScaler.c:<!-- TRAIT_NAME -->" spec="ScaleOperator" parameter="@traitClockRate.c:<!-- TRAIT_NAME -->" scaleFactor="0.9" weight="3.0"/>
+    <operator id="BSSVSoperator.c:<!-- TRAIT_NAME -->" spec="BitFlipBSSVSOperator" indicator="@rateIndicator.s:<!-- TRAIT_NAME -->" mu="@traitClockRate.c:<!-- TRAIT_NAME -->" weight="30.0"/>
+    <operator id="FrequenciesExchanger.s:<!-- ALN_NAME -->" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="freqParameter.s:<!-- ALN_NAME -->"/>
+    </operator>
+
+    <!-- logger -->
+    <logger id="tracelog" spec="Logger" fileName="<!-- ALN_NAME -->.log" logEvery="5000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+        <log idref="treeLikelihood.<!-- ALN_NAME -->"/>
+        <log id="TreeHeight.t:<!-- ALN_NAME -->" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:<!-- ALN_NAME -->"/>
+        <log idref="proportionInvariant.s:<!-- ALN_NAME -->"/>
+        <log idref="gammaShape.s:<!-- ALN_NAME -->"/>
+        <log idref="CoalescentExponential.t:<!-- ALN_NAME -->"/>
+        <log idref="ePopSize.t:<!-- ALN_NAME -->"/>
+        <log idref="growthRate.t:<!-- ALN_NAME -->"/>
+        <log idref="kappa.s:<!-- ALN_NAME -->"/>
+        <log idref="ucldMean.c:<!-- ALN_NAME -->"/>
+        <log idref="ucldStdev.c:<!-- ALN_NAME -->"/>
+        <log id="rate.c:<!-- ALN_NAME -->" spec="beast.evolution.branchratemodel.RateStatistic" branchratemodel="@RelaxedClock.c:<!-- ALN_NAME -->" tree="@Tree.t:<!-- ALN_NAME -->"/>
+        <log idref="nonZeroRates.s:<!-- TRAIT_NAME -->"/>
+        <log idref="rateIndicator.s:<!-- TRAIT_NAME -->"/>
+        <log idref="relativeGeoRates.s:<!-- TRAIT_NAME -->"/>
+        <log idref="traitClockRate.c:<!-- TRAIT_NAME -->"/>
+        <log id="geoSubstModelLogger.s:<!-- TRAIT_NAME -->" spec="SVSGeneralSubstitutionModelLogger" dataType="@traitDataType.<!-- TRAIT_NAME -->" model="@svs.s:<!-- TRAIT_NAME -->"/>
+        <log idref="freqParameter.s:<!-- ALN_NAME -->"/>
+    </logger>
+
+    <logger id="screenlog" spec="Logger" logEvery="5000">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+    </logger>
+    
+    <!-- tree logger -->
+    <logger id="treelog.t:<!-- ALN_NAME -->" spec="Logger" fileName="$(tree).trees" logEvery="5000" mode="tree">
+        <log id="TreeWithMetaDataLogger.t:<!-- ALN_NAME -->" spec="beast.evolution.tree.TreeWithMetaDataLogger" branchratemodel="@RelaxedClock.c:<!-- ALN_NAME -->" tree="@Tree.t:<!-- ALN_NAME -->"/>
+    </logger>
+
+    <logger id="treeWithTraitLogger.<!-- TRAIT_NAME -->" spec="Logger" fileName="<!-- ALN_NAME -->_<!-- TRAIT_NAME -->_tree_with_trait.trees" logEvery="5000" mode="tree">
+        <log id="TreeWithTraitLogger.0" spec="beast.evolution.tree.TreeWithTraitLogger" tree="@Tree.t:<!-- ALN_NAME -->">
+            <metadata idref="posterior"/>
+            <metadata idref="traitedtreeLikelihood.<!-- TRAIT_NAME -->"/>
+        </log>
+    </logger>
+
+    <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+
+</run>
+
+</beast>
