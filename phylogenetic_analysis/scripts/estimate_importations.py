@@ -28,7 +28,10 @@ def label_nodes(tre):
 	return(tre)
 
 
-def infer_timetree(tre, aln_path, date_dict, resolve, outgroup, save_filtered_aln, out_path):
+def infer_timetree(tre=None, aln_path=None, date_dict=None, resolve=False, outgroup=None, 
+  clock_rate=None, clock_std=None, save_filtered_aln=False, out_path='.'):
+	if outgroup:
+		outgroup = [i.name for i in tre.get_terminals() if outgroup in i.name][0]
 	# dates are for ClockTree class, all other ClockTree parameters are default
 	# tree, aln, gtr arguments are passed to TreeAnc clas
 	tre = TreeTime(dates=date_dict, tree=tre, aln=aln_path, gtr='JC69')
@@ -53,26 +56,40 @@ def infer_timetree(tre, aln_path, date_dict, resolve, outgroup, save_filtered_al
 	# fix treetime set-up for new tree topology
 	tre.prepare_tree()
 	print(f'resolve polytomies: {resolve}')
-	tre.run(root=outgroup, max_iter=2, tc='skyline', 
-		fixed_clock_rate=0.001, time_marginal=True, 
-		vary_rate=0.0005, resolve_polytomies=resolve)
+	if clock_std:
+		marginal='assign'
+		vary_rate=clock_std
+	else:
+		marginal=False
+		vary_rate=False
+	print(marginal)
+	print(clock_rate)
+	print(vary_rate)
+	tre.run(root=outgroup, Tc='skyline', time_marginal=marginal,
+        resolve_polytomies=resolve, 
+        max_iter=2, fixed_clock_rate=clock_rate, vary_rate=clock_std,
+        use_covariation=True)
 	# save data for root to tip regression
 	rtt_dat = [[n.numdate, n._v] for n in tre.tree.get_terminals()]
 	pd.DataFrame(rtt_dat).to_csv(f'{out_path}_rtt.csv', header=None, index=None)
-	times = pd.DataFrame({'name': [item.name for item in tre.tree.find_clades()],
-						  'date': [item.numdate for item in tre.tree.find_clades()],
-						  'lower': [list(tre.get_max_posterior_region(item, 0.9))[0] 
-						  			for item in tre.tree.find_clades()],
-						  'upper': [list(tre.get_max_posterior_region(item, 0.9))[1] 
-						  			for item in tre.tree.find_clades()]},
-						  index = range(0, len([item for item in tre.tree.find_clades()])))
-	times.to_csv(f'{out_path}_refined_node_times.csv')
+	if clock_std:
+		times = pd.DataFrame({'name': [item.name for item in tre.tree.find_clades()],
+							  'date': [item.numdate for item in tre.tree.find_clades()],
+							  'lower': [list(tre.get_max_posterior_region(item, 0.9))[0] 
+							  			for item in tre.tree.find_clades()],
+							  'upper': [list(tre.get_max_posterior_region(item, 0.9))[1] 
+							  			for item in tre.tree.find_clades()]},
+							  index = range(0, len([item for item in tre.tree.find_clades()])))
+	else:
+		times = pd.DataFrame({'name': [item.name for item in tre.tree.find_clades()],
+							  'date': [item.numdate for item in tre.tree.find_clades()]},
+							  index = range(0, len([item for item in tre.tree.find_clades()])))
+	times.to_csv(f'{out_path}_refined_node_times.csv', index=None)
 	for n in tre.tree.find_clades():
 		n.branch_length = n.mutation_length
 	# saving as XML to avoid recurssion error
 	with open(f'{out_path}_refined.newick', 'w') as out_file:
 		Phylo.write(tre.tree, out_file, 'newick')
-
 	tre.branch_length_to_years()
 	with open(f'{out_path}_refined_time.newick', 'w') as out_file:
 		Phylo.write(tre.tree, out_file, 'newick')
@@ -116,12 +133,14 @@ def estimate_importations(tre, loc_dict, interest_regions, out_path):
 	# Dictionary of each node's time
 	node_times = \
 		pd.read_csv(f'{out_path}_refined_node_times.csv')
-	node_times_dict = \
-		{item['name']: (item['lower'], item['date'], item['upper']) for index, item in node_times.iterrows()}
+	node_times = node_times.set_index('name', drop=True)
+	node_times_cols = {i: idx for idx, i in enumerate(node_times.columns)}
+	node_times_dict = {idx: tuple(item.values) for idx, item in node_times.iterrows()}	
 	# formats the unique importation nodes list
 	formatted_unique_importation_nodes = []
 	formatted_columns = ['destination region', 'source region', 'descendant tips', 
-					     'source node', '# descendants', 'midroot time', 'lower midroot time', 'upper midroot time']
+					     'source node', '# descendants']
+	formatted_columns.extend(['_'.join(i) for i in zip(node_times_cols.keys(), ['midbranch']*node_times.shape[1])])
 	# tabulates the number of introductions into each region
 	n_introductions_regions = {}
 	for region in interest_regions:
@@ -148,16 +167,14 @@ def estimate_importations(tre, loc_dict, interest_regions, out_path):
 								if value == importation_node]
 			# sorts by the ML time
 			min_descendant_time = sorted([node_times_dict[item] for item in node_descendants], 
-										  key=lambda k: k[1])[0]
+										  key=lambda k: k[node_times_cols['date']])[0]
 			this_importation_node = \
 					[region, 
 					 node_states_dict[importation_node.name], 
 					 node_descendants, 
 					 importation_node.name,
 					 len(node_descendants),
-					 (min_descendant_time[1] - node_time[1])/2 + node_time[1],
-					 (min_descendant_time[0] - node_time[0])/2 + node_time[0],
-					 (min_descendant_time[2] - node_time[2])/2 + node_time[2]]
+					 *list((min_descendant_time[idx] - node_time[idx])/2 + node_time[idx] for idx, i in enumerate(node_times_cols.keys()))]
 			# adds output row to larger list
 			formatted_unique_importation_nodes.append(this_importation_node)
 	# turns formatted list into data frame
@@ -227,12 +244,23 @@ def run():
 					help='regions to estimate introductions into',
 					default=None,
 					nargs='+')
+	parser.add_argument('--clockRate', type=float)
+	parser.add_argument('--clockStdev', type=float)
 	parser.add_argument('--resolve_polytomies', dest='resolve', action='store_true')
 	parser.add_argument('--saveAln', dest='save_aln', action='store_true')
 	parser.set_defaults(resolve=False)
 	parser.set_defaults(save_aln=False)
 	args = parser.parse_args()
 	sys.setrecursionlimit(5000)
+
+	#args.trees='data/weighted_downsampling/ga_focused_aligned_masked_weighted.treefile'
+	#args.metadata='data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv'
+	#args.sequences='data/weighted_downsampling/ga_focused_aligned_masked_weighted.fasta'
+	#args.outgroup='EPI_ISL_402125'
+	#args.biasCorrection = 2.5
+	#args.regions = ['GA']
+	#args.metadataLocCol = 6
+	#args.clockRate = 0.001
 	print('args parsed')
 	# read in trees
 	with open(args.trees, 'r') as fp:
@@ -276,8 +304,10 @@ def run():
 			for idx, i in metadata.iterrows()}
 		out_group = name_dict[args.outgroup]
 		tt_tre = \
-			infer_timetree(bootstrap_tre, args.sequences, 
-				date_dict, args.resolve, out_group, args.save_aln, out_file)
+			infer_timetree(tre=bootstrap_tre, aln_path=args.sequences, 
+				date_dict=date_dict, resolve=args.resolve, outgroup=out_group, 
+				clock_rate=args.clockRate, clock_std=args.clockStdev, 
+				save_filtered_aln=args.save_aln, out_path=out_file)
 		print(f'replicate {i} timetree inferred')
 		tt_tre2, letter_to_state, state_to_letter = \
 			infer_mugration(tt_tre.tree, args.sequences, loc_dict, args.biasCorrection,

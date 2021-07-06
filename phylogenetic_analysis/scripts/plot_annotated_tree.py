@@ -23,8 +23,9 @@ import numpy as np
 def process_results(file, results):
     file_name = file.split('/')[-1].split('.')[0]
     dat = pd.read_csv(file, index_col = 0)
-    dat = pd.melt(dat, id_vars=['destination region', 'source region', 'descendant tips', 'source node', '# descendants'], 
-            value_vars=['midroot time', 'lower midroot time', 'upper midroot time'])
+    id_vars = ['destination region', 'source region', 'descendant tips', 'source node', '# descendants']
+    dat = pd.melt(dat, id_vars=id_vars, 
+            value_vars=[i for i in dat.columns if i not in id_vars])
     dat['file'] = file_name
     dat = dat.sort_values('value')
     dat = dat.assign(cumsum=dat.groupby(['destination region', 'variable']).cumcount()+1)
@@ -320,10 +321,12 @@ def run():
     results = pd.DataFrame()
     for file in glob.glob(args.treeBootstrapDir):
         results = process_results(file, results)
-    print(results)
-    midroot_introductions = \
-        results[results['variable'] == 'midroot time'].groupby(
-            ['file', 'destination region', 'variable'])['cumsum'].agg('max').reset_index()
+    bootstrap_dir_split = args.treeBootstrapDir.split('/')
+    max_idx = max([idx for idx, i in enumerate(bootstrap_dir_split) if '*' in i])-1
+    results.to_csv('/'.join(bootstrap_dir_split[:max_idx])+'/parsed_introductions.tsv', sep='\t', index=None)
+    # subset to just what we want to plot
+    print(f'plotting variables {plot_config["time_series_plot_vars"]}')
+    plot_results = results[results['variable'].isin(plot_config["time_series_plot_vars"])]
     # //// READ IN AND PROCESS ML TREE TREE STATES////
     # Figure 1
     fig = plt.figure(figsize=(6.4,4.8*2.5))
@@ -337,8 +340,6 @@ def run():
     ax00 = plot_clade_distribution(ax00, args.metadata, plot_config)
     [ax00.spines[loc].set_visible(False) for loc in ['top', 'right']]
 
-
-
     ax0, x_lims, myTree = plot_tree(ax0, tree_file=args.tree, travel_file=args.travelData, 
         tree_states_file=args.treeStates, 
         plot_config=plot_config, branch_widths=[2, 0.02, 0.01])
@@ -350,10 +351,11 @@ def run():
         add_heatmap(ax0, tree=myTree, metadata_file=args.metadata, plot_config=plot_config, max_val=x_lims[1])
 
     x_lims = [x_lims[0], x_lims[1] + 7/366]
-    ax1, y_lims = plot_timeseries(ax1, results, plot_config)
-
-
-    sns.kdeplot(midroot_introductions["cumsum"], ax=ax2, shade=True, color='#8FBCBB', alpha=0.85, vertical=True)
+    ax1, y_lims = plot_timeseries(ax1, plot_results, plot_config)
+    n_introductions = plot_results.groupby(
+            ['file', 'destination region', 'variable'])['cumsum'].agg('max').reset_index()
+    print(n_introductions)
+    sns.kdeplot(n_introductions["cumsum"], ax=ax2, shade=True, color='#8FBCBB', alpha=0.85, vertical=True)
     [ax2.spines[loc].set_visible(False) for loc in ['top', 'right', 'left', 'bottom']]
     ax2.patch.set_alpha(0)
     ax2.set_yticks([])

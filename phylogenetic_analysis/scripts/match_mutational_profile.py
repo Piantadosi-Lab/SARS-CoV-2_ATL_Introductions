@@ -114,7 +114,6 @@ def run():
     #args.outName = 'test'
     #args.metadata = 'data/metadata_aligned.tsv'
 
-
     nuc_dict = {"A": "A", "C": "C", "T": ["T", "U"], 
             "G": "G", "U": ["T", "U"], "R": ["A", "G"], 
             "Y": ["C", "T", "U"], "S": ["G", "C"], 
