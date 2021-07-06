@@ -1,0 +1,22 @@
+Character to attribute mapping:
+  A: GA
+  B: NON_GA
+  C: ?
+
+
+Substitution rate (mu): 0.545866
+
+Equilibrium frequencies (pi_i):
+  A: 0.0217
+  B: 0.9783
+
+Symmetrized rates from j->i (W_ij):
+	A	B
+  A	0	23.5409
+  B	23.5409	0
+
+Actual rates from j->i (Q_ij):
+	A	B
+  A	0	0.5111
+  B	23.0298	0
+
