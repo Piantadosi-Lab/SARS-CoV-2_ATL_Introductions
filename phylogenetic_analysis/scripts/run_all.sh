@@ -12,15 +12,16 @@ globalSeqs=data/gisaid_hcov-19_2020_03_31_complete_hc_date.fasta
 # downloaded on 2021-03-27
 globalData=data/metadata.tsv
 # EHC sequences
-ehcSeqs=data/Early_GA_seqs.fasta
+ehcSeqs=data/Early_GA_seqs_51.fasta
 # EHC metadata
-ehcData=data/Early_GA_seqs_metadata.tsv
+ehcData=data/Early_GA_seqs_metadata_51.tsv
 # TODO update this
 l84sSeqs=data/gisaid_hcov-19_2020_03_31_l84s_complete_hc_date.fasta
 # reference information
 refSeq='data/EPI_ISL_402125.fasta'
 refName='EPI_ISL_402125'
 # US case data
+# from Hopkins Github
 usCaseData=data/time_series_covid19_confirmed_US.csv
 
 # sets up folder structure
@@ -30,6 +31,7 @@ mkdir data/weighted_downsampling
 mkdir data/19B_subclade
 mkdir data/l84s
 mkdir data/temporal_downsampling
+mkdir data/travel_analysis
 
 # --------------------------------------------------------------------------------------#
 # //// 1. BASIC FORMATTING OF EHC SEQUENCES AND METADATA ////
@@ -38,7 +40,9 @@ mkdir data/temporal_downsampling
 # also removes "amp" and "merged" from file names
 sed '/\>/ s//\>\|/g' $ehcSeqs | \
     sed 's/\_amp//g' | \
-    sed 's/\_merged//g' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' > ${ehcSeqs%.fasta}_format.fasta 
+    sed 's/\_merged//g' | \
+    sed 's/_new//g' | \
+    sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' > ${ehcSeqs%.fasta}_format.fasta 
 # gets names which appear in both ehcSeqs
 # and in globalSeqs (ehcSeqs already uploaded to gisaid)
 # and adds them to exclude folder
@@ -53,6 +57,32 @@ echo '# same patient samples
 # preferentially including NP samples
 1\tGA-EHC-087I
 1\tGA-EHC-081C' \
+>> config/exclude.tsv
+
+# the following were uploaded by the CDC and may be mixed up wrt sequence/accession
+echo '# uploaded by CDC and may be mixed up with regard to name/sequence
+1\tEPI_ISL_2790694
+1\tEPI_ISL_2790695
+1\tEPI_ISL_2790696
+1\tEPI_ISL_2790697
+1\tEPI_ISL_2790698
+1\tEPI_ISL_2790699
+1\tEPI_ISL_2790700
+1\tEPI_ISL_2790701
+1\tEPI_ISL_2790702
+1\tEPI_ISL_2790703
+1\tEPI_ISL_2790704
+1\tEPI_ISL_2790705
+1\tEPI_ISL_2790706
+1\tEPI_ISL_2790707
+1\tEPI_ISL_2790708
+1\tEPI_ISL_2790709
+1\tEPI_ISL_2790710
+1\tEPI_ISL_2790711
+1\tEPI_ISL_2790712
+1\tEPI_ISL_2790713
+1\tEPI_ISL_2790714
+1\tEPI_ISL_2790715' \
 >> config/exclude.tsv
 
 # formats the EHC metadata
@@ -114,10 +144,10 @@ python3 scripts/align_seqs.py \
     --maskTail 100 \
     --maskSites 11083 15324 21575  \
     --alignType reference \
-    --minLength 29000
+    --minLength 28000
 
-# subset the metadata to just the aligned sequences
-# and combine with lineage assignments
+
+# subset the metadata to just the aligned and filtered sequences 
 awk -F'\t' 'FNR==NR {hash[$1]; next} $2 in hash' \
     <(grep ">" ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta |\
     sed 's/\>//g' | awk -F'|' '{print $2}') \
@@ -187,12 +217,30 @@ awk -F'\t' 'FNR==NR {split($1, b, "|"); a[b[2]]=$2; next}{print $0"\t"a[$2]}' \
 # get metadata for just GA included sequences
 grep "\tGA\t" data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
     > data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv
+# get fasta of just GA included sequences
+python3 scripts/get_seqs.py \
+    --seqs data/weighted_downsampling/ga_focused_aligned_masked_weighted.fasta \
+    --getSeqs data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv \
+    --getSeqsCol 1 \
+    --getSeqsField 0 \
+    --outName data/weighted_downsampling/ga_focused_aligned_masked_weighted_GA
+
+# todo refresh this
+# pangolin web app used to assign pango lineages on August 26, 2021
+# add date col to pangolin 
+
+awk -F'\t' 'FNR==NR {date[$2] = $3; next} {split($1, columns, ","); split(columns[1], name, "|"); print name[2]"\t"date[name[2]]"\t"columns[2]}' \
+    data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv \
+    <(tail -n +2 data/weighted_downsampling/ga_focused_aligned_masked_weighted_GA_pangolin.csv) \
+    > data/weighted_downsampling/ga_focused_aligned_masked_weighted_GA_pangolin_dates.csv
+
+
 
 
 # --------------------------------------------------------------------------------------#
 # //// 5. BUILD ML TREE OF WEIGHTED DOWNSAMPLED SEQS ////
 # --------------------------------------------------------------------------------------#
-iqtree2 -redo --polytomy -m TEST -T AUTO -bb 1000 --wbtl -T 4 \
+iqtree2 -redo --polytomy -m TEST -bb 1000 --wbtl -T 4 \
     --prefix data/weighted_downsampling/ga_focused_aligned_masked_weighted \
     -s data/weighted_downsampling/ga_focused_aligned_masked_weighted.fasta
 
@@ -236,6 +284,7 @@ python3 scripts/estimate_importations.py \
 # --------------------------------------------------------------------------------------#
 # //// 8. RESULTS FROM STEPS 7 AND 8 ////
 # --------------------------------------------------------------------------------------#
+# RERUN ANYTHING WHICH USES GA TRAVEL SEQS FILE
 python3 scripts/plot_annotated_tree.py \
     --tree data/weighted_downsampling/ga_focused_aligned_masked_weighted.treefile_tres/0/0_refined_time.newick \
     --treeStates data/weighted_downsampling/ga_focused_aligned_masked_weighted.treefile_tres/0/0_refined_node_states.csv \
@@ -274,6 +323,12 @@ python3 scripts/cluster_seqs.py \
 grep '\t0' data/weighted_downsampling/ga_focused_aligned_masked_weighted_clusters_0.3.tsv | \
     awk '{print $1}' \
     > data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0.tsv
+# get the pangolin lineage of these sequences
+# todo this
+grep -f data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0.tsv \
+    data/weighted_downsampling/ga_focused_aligned_masked_weighted_GA_pangolin.csv \
+    > data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0_pangolin.tsv
+
 # get the mutational profile of these sequences
 python3 scripts/match_mutational_profile.py \
     --seqs  data/weighted_downsampling/ga_focused_aligned_masked_weighted.fasta \
@@ -302,6 +357,7 @@ python3 scripts/match_mutational_profile.py \
     --focalSeqs data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0_family.tsv \
     --refSeq data/$refName.fasta \
     --outName data/19B_subclade/19B_subclade_family
+
 # get metadata
 awk -F'\t' 'FNR==NR {hash[$1]; next} $2 in hash' \
     <(grep ">" data/19B_subclade/19B_subclade_family.fasta |\
@@ -314,6 +370,7 @@ awk -F'\t' 'FNR==NR {hash[$1]; next} $2 in hash' \
 # //// 11. BUILD ML TREE OF 19B SUBCLADE ////
 # --------------------------------------------------------------------------------------#
 # build ML tree
+# todo check iqtree version
 iqtree2 -redo --polytomy -m TEST -T AUTO --wbtl -T 4 \
     --prefix data/19B_subclade/19B_subclade_family \
     -s data/19B_subclade/19B_subclade_family.fasta
@@ -372,14 +429,14 @@ python3 scripts/generate_xml.py \
     --seqs data/19B_subclade/19B_subclade_family_clockfilter.fasta \
     --metadata data/19B_subclade/19B_subclade_beast_include.tsv \
     --metadataTraitCol 7 \
-    --alnName 19B_sublcade \
+    --alnName 19B_subclade \
     --traitName location 
 
 # run beast
 # todo add command
 # generate MCC tree
 /Applications/BEAST\ 2.6.3/bin/treeannotator -heights median -b 10  -lowMem \
-    data/19B_subclade/19B_sublcade_location_tree_with_trait.trees \
+    data/19B_subclade/19B_subclade_location_tree_with_trait.trees \
     data/19B_subclade/19B_location_mcc.tre
 
 
@@ -388,12 +445,12 @@ python3 scripts/generate_xml.py \
 # --------------------------------------------------------------------------------------#
 # parse set of beast trees
 python3 scripts/parse_beast_trees.py \
-    --trees data/19B_subclade/19B_sublcade_location_tree_with_trait.trees
+    --trees data/19B_subclade/19B_subclade_location_tree_with_trait.trees
 
 # gets statistics
 # todo make this more efficient!
 python3 scripts/estimate_n_importations_beast.py \
-    --trees data/19B_subclade/19B_sublcade_location_tree_with_trait.pkl \
+    --trees data/19B_subclade/19B_subclade_location_tree_with_trait.pkl \
     --focalRegion GeorgiaUSA
 
 # generate table
@@ -480,7 +537,7 @@ python3 scripts/compare_seqs.py \
 # //// 15. PLOT NUMBER OF MATCHING SEQUENCES PER WEEK ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/plot_19B_subclade.py \
-    --mutationalProfile data/19B_subclade/19B_subclade_EHC_focal_snps_shared.tsv \
+    --mutationalProfile data/weighted_downsampling/19B_subclade_focal_snps_shared.tsv \
     --config config/19B_subclade.json \
     --matchMutationalProfile data/l84s/l84s_19B_subclade_match_focal_snps.tsv \
 
@@ -489,7 +546,7 @@ python3 scripts/plot_19B_subclade.py \
 # //// 16. DOWNSAMPLE THE GLOBAL SEQUENCES BASED ON SAMPLING DATE ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/downsample_seqs.py \
-    --sequences ${globalSeqs%.fasta}_EHC_aligned_ref_filtered_masked.fasta \
+    --sequences ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta \
     --metadata ${globalData%.tsv}_aligned.tsv \
     --include ./config/include.tsv \
     --exclude ./config/exclude.tsv \
@@ -497,12 +554,21 @@ python3 scripts/downsample_seqs.py \
     --samplesPerWeek 20 \
     --outName data/temporal_downsampling/ga_focused_aligned_masked_temporal
 
-# subset metadata
-awk -F'\t' 'FNR==NR {hash[$1]; next} $2 in hash' \
-    <(grep ">" data/temporal_downsampling/ga_focused_aligned_masked_temporal.fasta |\
-    sed 's/\>//g' | awk -F'|' '{print $2}') \
-    ${globalData%.tsv}_aligned.tsv \
+# # get clade assignments for downsampled sequences
+nextclade \
+    --input-fasta data/temporal_downsampling/ga_focused_aligned_masked_temporal.fasta \
+    --output-tsv data/temporal_downsampling/ga_focused_aligned_masked_temporal_clades.tsv
+
+
+# get metadata for all included sequences and combine with clades
+awk -F'\t' 'FNR==NR {split($1, b, "|"); a[b[2]]=$2; next}{print $0"\t"a[$2]}' \
+    data/temporal_downsampling/ga_focused_aligned_masked_temporal_clades.tsv \
+    <(awk -F'\t' 'FNR==NR {hash[$1]; next} $2 in hash' \
+        <(grep ">" data/temporal_downsampling/ga_focused_aligned_masked_temporal.fasta |\
+        sed 's/\>//g' | awk -F'|' '{print $2}') \
+        ${globalData%.tsv}_aligned.tsv) \
     > data/temporal_downsampling/ga_focused_aligned_masked_temporal_all_included_seqs.tsv
+
 
 # get metadata for just GA included sequences
 grep "\tGA\t" data/temporal_downsampling/ga_focused_aligned_masked_temporal_all_included_seqs.tsv \
@@ -582,37 +648,38 @@ cat <(awk -F'\t' '{print $2}' data/weighted_downsampling/ga_focused_aligned_mask
 # //// 22. NUMBER OF CASES AND SEQUENCES OVER TIME ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/plot_case_data.py \
-    --caseData data/time_series_covid19_confirmed_US.csv
+    --caseData data/time_series_covid19_confirmed_US.csv \
     --seqData data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv
 
-
 # --------------------------------------------------------------------------------------#
-# //// 22. IMPUTE NUCLEOTIDES FOR 069Q ////
+# //// 23.  TRAVEL ANALYSIS ////
 # --------------------------------------------------------------------------------------#
-# get align and mask 069Q with no filtering
-python3 scripts/get_seqs.py \
-    --seqs ${globalSeqs%.fasta}_EHC.fasta \
-    --getSeqs <(echo "GA-EHC-069Q\n$refName") \
-    --getSeqsCol 0 \
-    --getSeqsField 0 \
-    --outName data/GA-EHC-069Q_ref
+# compare to travel regions
+python3 scripts/calc_distance.py \
+    --seqs ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta \
+    --metadata ${globalData%.tsv}_aligned.tsv \
+    --config <(awk -F'\t' '{print $2"\t"$3}' data/ga_travel_seqs.tsv) \
+    --refSeq $refSeq \
+    --outDir data/travel_analysis \
+    > data/travel_analysis/log_travel.txt
 
-python3 scripts/align_seqs.py \
-    --sequences data/GA-EHC-069Q_ref.fasta \
-    --referenceName $refName \
-    --maskHead 100 \
-    --maskTail 100 \
-    --maskSites 11083 15324 21575  \
-    --alignType reference 
+# compare to GA sequences
+python3 scripts/calc_distance.py \
+    --seqs ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta \
+    --metadata ${globalData%.tsv}_aligned.tsv \
+    --config <(awk -F'\t' '{print $2"\tGeorgiaUSA"}' data/ga_travel_seqs.tsv) \
+    --refSeq $refSeq \
+    --outDir data/travel_analysis \
+    > data/travel_analysis/log_ga.txt
 
-# add 069Q to other aligned sequences and impute 
-python3 scripts/impute_nucleotides.py \
-    --seqs <(cat ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta data/GA-EHC-069Q_ref_aligned_ref_filtered_masked_noref.fasta) \
-    --targetSeq GA-EHC-069Q \
-    --outName ${globalSeqs%.fasta}_EHC_069Q_metadata_aligned_ref_filtered_masked_imputed.fasta
+# now compare to all regions
+python3 scripts/calc_distance.py \
+    --seqs ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta \
+    --metadata ${globalData%.tsv}_aligned.tsv \
+    --config <(awk -F'\t' '{print $2}' data/ga_travel_seqs.tsv) \
+    --refSeq $refSeq \
+    --outDir data/travel_analysis \
+    > data/travel_analysis/log_all.txt
 
-
-# --------------------------------------------------------------------------------------#
-# //// 22. TRAVEL ANALYSIS ////
-# --------------------------------------------------------------------------------------#
-# TODO TRAVEL ANALYSIS
+# now make the figures 
+Rscript scripts/plot_traveler_dists.R

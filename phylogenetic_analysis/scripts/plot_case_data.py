@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from scripts.utils import plot_style
+#from scripts.utils import plot_style
+from utils import plot_style
 import matplotlib.dates as mdates
 from datetime import datetime
 import string
@@ -41,13 +42,13 @@ def run():
         parser.add_argument('--maxDate')
         parser.add_argument('--seqData')
         args = parser.parse_args()
-        args.caseData = 'data/time_series_covid19_confirmed_US.csv'
-        args.seqData = 'data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv'
+        #args.caseData = 'data/time_series_covid19_confirmed_US.csv'
+        #args.seqData = 'data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv'
         args.focalCaseState = 'Georgia'
         args.maxDate = '2020-03-31'
-                plot_style()
-                state_dat, county_dat = process_case_data(args.caseData, args.focalCaseState, args.maxDate)
-                seq_per_day = process_seq_data(args.seqData)
+        plot_style()
+        state_dat, county_dat = process_case_data(args.caseData, args.focalCaseState, args.maxDate)
+        seqs_per_day = process_seq_data(args.seqData)
 
         early_date = min(seqs_per_day.index.min(), state_dat.index.min())
         late_date = max(seqs_per_day.index.max(), state_dat.index.max())

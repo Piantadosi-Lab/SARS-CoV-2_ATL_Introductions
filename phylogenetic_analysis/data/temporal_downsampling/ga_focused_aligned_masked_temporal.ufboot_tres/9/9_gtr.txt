@@ -4,19 +4,19 @@ Character to attribute mapping:
   C: ?
 
 
-Substitution rate (mu): 0.413791
+Substitution rate (mu): 0.468135
 
 Equilibrium frequencies (pi_i):
-  A: 0.0378
-  B: 0.9622
+  A: 0.0195
+  B: 0.9805
 
 Symmetrized rates from j->i (W_ij):
 	A	B
-  A	0	13.7531
-  B	13.7531	0
+  A	0	26.1227
+  B	26.1227	0
 
 Actual rates from j->i (Q_ij):
 	A	B
-  A	0	0.5196
-  B	13.2335	0
+  A	0	0.51
+  B	25.6128	0
 

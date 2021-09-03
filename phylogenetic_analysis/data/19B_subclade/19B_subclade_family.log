@@ -1,18 +1,18 @@
-IQ-TREE multicore version 2.0.7 for Mac OS X 64-bit built Jul 24 2020
-Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
-Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+IQ-TREE multicore version 2.1.3 COVID-edition for Mac OS X 64-bit built Apr 20 2021
+Developed by Bui Quang Minh, James Barbetti, Nguyen Lam Tung,
+Olga Chernomor, Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
 
 Host:    bio-kvkoell-20i (AVX2, FMA3, 32 GB RAM)
 Command: iqtree2 -redo --polytomy -m TEST -T AUTO --wbtl -T 4 --prefix data/19B_subclade/19B_subclade_family -s data/19B_subclade/19B_subclade_family.fasta
-Seed:    388357 (Using SPRNG - Scalable Parallel Random Number Generator)
-Time:    Fri Apr  9 13:48:29 2021
+Seed:    926037 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Aug 19 16:24:44 2021
 Kernel:  AVX+FMA - 4 threads (16 CPU cores detected)
 
 Reading alignment file data/19B_subclade/19B_subclade_family.fasta ... Fasta format detected
 Alignment most likely contains DNA/RNA sequences
 WARNING: 203 sites contain only gaps or ambiguous characters.
-Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
-112 parsimony-informative, 267 singleton sites, 29524 constant sites
+Alignment has 528 sequences with 29903 columns, 1141 distinct patterns
+112 parsimony-informative, 271 singleton sites, 29520 constant sites
                                                                     Gap/Ambiguity  Composition  p-value
    1  hCoV-19/Hong_Kong/HKPU1_2101/2020|EPI_ISL_417176|2020-01-21           1.05%    passed    100.00%
    2  hCoV-19/Australia/VIC27/2020|EPI_ISL_419746|2020-03-10                0.68%    passed    100.00%
@@ -27,7 +27,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
   11  hCoV-19/Australia/VIC53/2020|EPI_ISL_419769|2020-03-12                0.68%    passed    100.00%
   12  hCoV-19/Australia/VIC56/2020|EPI_ISL_419777|2020-03-12                0.68%    passed    100.00%
   13  hCoV-19/Australia/VIC73/2020|EPI_ISL_419785|2020-03-14                0.68%    passed    100.00%
-  14  hCoV-19/Australia/VIC76/2020|EPI_ISL_419788|2020-03-14                1.46%    passed     99.98%
+  14  hCoV-19/Australia/VIC76/2020|EPI_ISL_419788|2020-03-14                1.46%    passed     99.97%
   15  hCoV-19/Australia/VIC77/2020|EPI_ISL_419789|2020-03-14                0.68%    passed    100.00%
   16  hCoV-19/USA/SC-DHEC-0001/2020|EPI_ISL_491097|2020-03-06               0.87%    passed    100.00%
   17  hCoV-19/USA/SC-DHEC-0003/2020|EPI_ISL_491098|2020-03-07               1.55%    passed     99.95%
@@ -42,7 +42,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
   26  hCoV-19/USA/UT-QDX-1847/2020|EPI_ISL_604163|2020-03-14                0.68%    passed    100.00%
   27  hCoV-19/USA/GA-QDX-1938/2020|EPI_ISL_604222|2020-03-13                1.48%    passed     99.80%
   28  hCoV-19/USA/PA-QDX-1888/2020|EPI_ISL_604279|2020-03-12                0.68%    passed    100.00%
-  29  hCoV-19/Australia/WA302/2020|EPI_ISL_596845|2020-03-12                1.66%    passed     98.04%
+  29  hCoV-19/Australia/WA302/2020|EPI_ISL_596845|2020-03-12                1.66%    passed     98.05%
   30  hCoV-19/USA/UT-QDX-1825/2020|EPI_ISL_604144|2020-03-14                0.68%    passed    100.00%
   31  hCoV-19/USA/UT-QDX-1833/2020|EPI_ISL_604151|2020-03-14                0.68%    passed    100.00%
   32  hCoV-19/Hong_Kong/VM20001061-2/2020|EPI_ISL_412028|2020-01-22         0.68%    passed    100.00%
@@ -84,7 +84,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
   68  hCoV-19/USA/UT-QDX-2189/2020|EPI_ISL_604578|2020-03-12                0.68%    passed    100.00%
   69  hCoV-19/USA/GA-QDX-2115/2020|EPI_ISL_604449|2020-03-14                0.68%    passed    100.00%
   70  hCoV-19/USA/GA-QDX-2150/2020|EPI_ISL_604450|2020-03-14                0.68%    passed    100.00%
-  71  hCoV-19/USA/GA-QDX-2158/2020|EPI_ISL_604451|2020-03-14                1.44%    passed     99.78%
+  71  hCoV-19/USA/GA-QDX-2158/2020|EPI_ISL_604451|2020-03-14                1.44%    passed     99.77%
   72  hCoV-19/USA/LA-QDX-2108/2020|EPI_ISL_604454|2020-03-14                0.68%    passed    100.00%
   73  hCoV-19/Wuhan/HB-WH5-231/2020|EPI_ISL_454974|2020-02-17               0.68%    passed     99.99%
   74  hCoV-19/Wuhan/HB-WH6-246/2020|EPI_ISL_454983|2020-03-12               0.68%    passed    100.00%
@@ -138,7 +138,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  122  hCoV-19/USA/CA-QDX-2012/2020|EPI_ISL_604306|2020-03-18                0.88%    passed     99.99%
  123  hCoV-19/USA/CA-QDX-2022/2020|EPI_ISL_604310|2020-03-19                0.68%    passed    100.00%
  124  hCoV-19/USA/CA-QDX-2039/2020|EPI_ISL_604319|2020-03-18                0.68%    passed    100.00%
- 125  hCoV-19/USA/NY-QDX-2008/2020|EPI_ISL_604361|2020-03-17                1.62%    passed     99.32%
+ 125  hCoV-19/USA/NY-QDX-2008/2020|EPI_ISL_604361|2020-03-17                1.62%    passed     99.33%
  126  hCoV-19/USA/TX-QDX-2025/2020|EPI_ISL_604376|2020-03-17                0.76%    passed     99.98%
  127  hCoV-19/USA/CA-QDX-2077/2020|EPI_ISL_604395|2020-03-19                0.68%    passed    100.00%
  128  hCoV-19/USA/FL-TGH-0043/2020|EPI_ISL_1379452|2020-03-19               0.68%    passed    100.00%
@@ -163,7 +163,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  147  hCoV-19/Scotland/CVR113/2020|EPI_ISL_425658|2020-03-15                0.68%    passed    100.00%
  148  hCoV-19/USA/IL-NM020/2020|EPI_ISL_444530|2020-03-16                   1.41%    passed     99.98%
  149  hCoV-19/USA/IL-NM066/2020|EPI_ISL_444561|2020-03-18                   1.41%    passed     99.99%
- 150  hCoV-19/USA/IL-NM067/2020|EPI_ISL_444562|2020-03-18                   1.87%    passed     99.73%
+ 150  hCoV-19/USA/IL-NM067/2020|EPI_ISL_444562|2020-03-18                   1.87%    passed     99.74%
  151  hCoV-19/USA/IL-NM069/2020|EPI_ISL_444564|2020-03-18                   1.41%    passed     99.98%
  152  hCoV-19/USA/IL-NM071/2020|EPI_ISL_444566|2020-03-18                   0.68%    passed    100.00%
  153  hCoV-19/USA/IL-NM072/2020|EPI_ISL_444567|2020-03-18                   0.68%    passed    100.00%
@@ -195,7 +195,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  179  hCoV-19/USA/GA-QDX-1742/2020|EPI_ISL_604025|2020-03-16                0.68%    passed    100.00%
  180  hCoV-19/USA/GA-QDX-1771/2020|EPI_ISL_604027|2020-03-16                0.68%    passed    100.00%
  181  hCoV-19/USA/WI-UW-166/2020|EPI_ISL_428262|2020-03-17                  0.68%    passed    100.00%
- 182  hCoV-19/USA/IL-NM097/2020|EPI_ISL_444585|2020-03-15                   1.52%    passed     99.27%
+ 182  hCoV-19/USA/IL-NM097/2020|EPI_ISL_444585|2020-03-15                   1.52%    passed     99.28%
  183  hCoV-19/USA/IL-NM0109/2020|EPI_ISL_444594|2020-03-20                  0.68%    passed    100.00%
  184  hCoV-19/USA/IL-NM0112/2020|EPI_ISL_444596|2020-03-20                  0.68%    passed    100.00%
  185  hCoV-19/USA/IL-NM0113/2020|EPI_ISL_444597|2020-03-19                  1.52%    passed     99.39%
@@ -231,7 +231,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  215  hCoV-19/Scotland/CVR205/2020|EPI_ISL_425735|2020-03-19                0.68%    passed    100.00%
  216  hCoV-19/USA/FL-BPHL-0584/2020|EPI_ISL_508788|2020-03-20               0.68%    passed    100.00%
  217  hCoV-19/USA/WA-UW-1255/2020|EPI_ISL_570547|2020-03-16                 0.68%    passed    100.00%
- 218  hCoV-19/USA/CA-QDX-2134/2020|EPI_ISL_604423|2020-03-18                1.56%    passed     99.37%
+ 218  hCoV-19/USA/CA-QDX-2134/2020|EPI_ISL_604423|2020-03-18                1.56%    passed     99.36%
  219  hCoV-19/USA/TX-QDX-2122/2020|EPI_ISL_604486|2020-03-20                0.68%    passed    100.00%
  220  hCoV-19/USA/CA-QDX-2185/2020|EPI_ISL_604446|2020-03-18                0.68%    passed    100.00%
  221  hCoV-19/USA/LA-QDX-2131/2020|EPI_ISL_604455|2020-03-18                0.68%    passed    100.00%
@@ -253,13 +253,13 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  237  hCoV-19/USA/SC-DHEC-0032/2020|EPI_ISL_529174|2020-03-20               0.88%    passed    100.00%
  238  hCoV-19/USA/MN-QDX-1342/2020|EPI_ISL_572131|2020-03-15                1.05%    passed     99.99%
  239  hCoV-19/USA/MN-QDX-1386/2020|EPI_ISL_572175|2020-03-16                0.68%    passed    100.00%
- 240  hCoV-19/Australia/NSW1027/2020|EPI_ISL_593756|2020-03-15              1.67%    passed     98.56%
+ 240  hCoV-19/Australia/NSW1027/2020|EPI_ISL_593756|2020-03-15              1.67%    passed     98.57%
  241  hCoV-19/USA/CA-QDX-2691/2020|EPI_ISL_604998|2020-03-16                0.68%    passed    100.00%
  242  hCoV-19/USA/NY-Wadsworth-21493-01/2020|EPI_ISL_525621|2020-03-18      0.68%    passed    100.00%
  243  hCoV-19/USA/TX-QDX-1198/2020|EPI_ISL_572036|2020-03-16                0.68%    passed    100.00%
  244  hCoV-19/USA/TX-QDX-1201/2020|EPI_ISL_572038|2020-03-16                0.68%    passed    100.00%
  245  hCoV-19/USA/CA-QDX-1434/2020|EPI_ISL_572086|2020-03-18                0.68%    passed    100.00%
- 246  hCoV-19/USA/IL-NM-0052/2020|EPI_ISL_626360|2020-03-15                 1.20%    passed     99.35%
+ 246  hCoV-19/USA/IL-NM-0052/2020|EPI_ISL_626360|2020-03-15                 1.20%    passed     99.36%
  247  hCoV-19/USA/NY-QDX-1257/2020|EPI_ISL_572021|2020-03-16                0.68%    passed    100.00%
  248  hCoV-19/USA/CA-QDX-2586/2020|EPI_ISL_604881|2020-03-16                0.68%    passed    100.00%
  249  hCoV-19/USA/CA-QDX-2647/2020|EPI_ISL_604909|2020-03-16                0.68%    passed    100.00%
@@ -268,10 +268,10 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  252  hCoV-19/USA/DE-DHSS-F918613/2020|EPI_ISL_574599|2020-03-20            1.16%    passed     99.99%
  253  hCoV-19/USA/MI-MDHHS-SC20050/2020|EPI_ISL_437137|2020-03-19           1.60%    passed     99.97%
  254  hCoV-19/USA/MI-MDHHS-SC20052/2020|EPI_ISL_437139|2020-03-20           1.11%    passed     99.99%
- 255  hCoV-19/Australia/NSW213/2020|EPI_ISL_427726|2020-03-17               1.67%    passed     98.32%
- 256  hCoV-19/Australia/NSW214/2020|EPI_ISL_427727|2020-03-17               1.67%    passed     98.53%
- 257  hCoV-19/Australia/NSW215/2020|EPI_ISL_427730|2020-03-17               1.67%    passed     98.53%
- 258  hCoV-19/Australia/NSW216/2020|EPI_ISL_427732|2020-03-17               1.67%    passed     98.40%
+ 255  hCoV-19/Australia/NSW213/2020|EPI_ISL_427726|2020-03-17               1.67%    passed     98.33%
+ 256  hCoV-19/Australia/NSW214/2020|EPI_ISL_427727|2020-03-17               1.67%    passed     98.54%
+ 257  hCoV-19/Australia/NSW215/2020|EPI_ISL_427730|2020-03-17               1.67%    passed     98.54%
+ 258  hCoV-19/Australia/NSW216/2020|EPI_ISL_427732|2020-03-17               1.67%    passed     98.41%
  259  hCoV-19/USA/NY-PV09466/2020|EPI_ISL_450139|2020-03-19                 0.76%    passed     99.99%
  260  hCoV-19/USA/NY-NYUMC754/2020|EPI_ISL_451468|2020-03-20                0.68%    passed    100.00%
  261  hCoV-19/New_Zealand/20VR1275/2020|EPI_ISL_456200|2020-03-20           0.69%    passed    100.00%
@@ -291,7 +291,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  275  hCoV-19/USA/TX-HMH06/2020|EPI_ISL_434717|2020-03-16                   0.68%    passed    100.00%
  276  hCoV-19/USA/TX-HMH021/2020|EPI_ISL_434731|2020-03-17                  0.68%    passed    100.00%
  277  hCoV-19/USA/TX-HMH022/2020|EPI_ISL_434732|2020-03-17                  0.68%    passed    100.00%
- 278  hCoV-19/USA/TX-HMH051/2020|EPI_ISL_434760|2020-03-17                  2.03%    passed     99.56%
+ 278  hCoV-19/USA/TX-HMH051/2020|EPI_ISL_434760|2020-03-17                  2.03%    passed     99.57%
  279  hCoV-19/USA/TX-HMH057/2020|EPI_ISL_434766|2020-03-17                  1.56%    passed     99.97%
  280  hCoV-19/USA/MD-HP00104/2020|EPI_ISL_438246|2020-03-18                 0.69%    passed    100.00%
  281  hCoV-19/USA/FL-USAFSAM-S009/2020|EPI_ISL_512785|2020-03-19            1.59%    passed     99.98%
@@ -345,7 +345,7 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  329  hCoV-19/USA/FL-QDX-788/2020|EPI_ISL_571523|2020-03-21                 0.68%    passed    100.00%
  330  hCoV-19/USA/MI-QDX-826/2020|EPI_ISL_571543|2020-03-22                 0.68%    passed    100.00%
  331  hCoV-19/USA/OH-ODH-SC21713/2020|EPI_ISL_935520|2020-03-21             1.15%    passed     99.94%
- 332  hCoV-19/Australia/NSW374/2020|EPI_ISL_451634|2020-03-21               1.67%    passed     98.53%
+ 332  hCoV-19/Australia/NSW374/2020|EPI_ISL_451634|2020-03-21               1.67%    passed     98.54%
  333  hCoV-19/Canada/QC-LSPQ-L00230159/2020|EPI_ISL_535911|2020-03-21       0.69%    passed    100.00%
  334  hCoV-19/USA/CA-CZB043/2020|EPI_ISL_429048|2020-03-25                  0.68%    passed    100.00%
  335  hCoV-19/USA/MD-HP00153/2020|EPI_ISL_457782|2020-03-24                 1.88%    passed     99.71%
@@ -516,31 +516,33 @@ Alignment has 526 sequences with 29903 columns, 1098 distinct patterns
  500  hCoV-19/Canada/AB-76629/2020|EPI_ISL_806416|2020-03-27                0.68%    passed    100.00%
  501  hCoV-19/USA/FL-BPHL-1227/2020|EPI_ISL_541237|2020-03-30               0.68%    passed    100.00%
  502  hCoV-19/USA/TX-HMH-1213/2020|EPI_ISL_542587|2020-03-31                0.68%    passed    100.00%
- 503  |GA-EHC-009I                                                          0.68%    passed    100.00%
- 504  |GA-EHC-023W                                                          1.09%    passed     99.85%
- 505  |GA-EHC-030D                                                          0.69%    passed    100.00%
- 506  |GA-EHC-032F                                                          1.71%    passed     99.81%
- 507  |GA-EHC-033G                                                          0.68%    passed    100.00%
- 508  |GA-EHC-035I                                                          1.71%    passed     99.82%
- 509  |GA-EHC-037K                                                          0.68%    passed    100.00%
- 510  |GA-EHC-038L                                                          0.68%    passed    100.00%
- 511  |GA-EHC-040N                                                          0.68%    passed    100.00%
- 512  |GA-EHC-042P                                                          0.68%    passed    100.00%
- 513  |GA-EHC-043Q                                                          1.00%    passed    100.00%
- 514  |GA-EHC-044R                                                          0.72%    passed    100.00%
- 515  |GA-EHC-052Z                                                          0.87%    passed     99.98%
- 516  |GA-EHC-053A                                                          0.81%    passed     99.97%
- 517  |GA-EHC-054B                                                          0.97%    passed     99.96%
- 518  |GA-EHC-060H                                                          0.68%    passed    100.00%
- 519  |GA-EHC-086H                                                          0.68%    passed    100.00%
- 520  |GA-EHC-087I                                                          0.68%    passed    100.00%
- 521  |GA-EHC-097S                                                          1.12%    passed     99.79%
- 522  |GA-EHC-108D                                                          0.72%    passed     99.99%
- 523  |GA-EHC-111G                                                          0.69%    passed     99.99%
- 524  |GA-EHC-113J                                                          0.70%    passed    100.00%
- 525  |GA-EHC-022V                                                          0.77%    passed     99.99%
- 526  |GA-EHC-047U                                                          0.68%    passed    100.00%
-****  TOTAL                                                                 0.81%  0 sequences failed composition chi2 test (p-value<5%; df=3)
+ 503  |GA-EHC-060H                                                          0.68%    passed    100.00%
+ 504  |GA-EHC-108D                                                          0.72%    passed     99.99%
+ 505  |GA-EHC-113J                                                          0.70%    passed    100.00%
+ 506  |GA-EHC-044R                                                          0.72%    passed    100.00%
+ 507  |GA-EHC-087I                                                          0.68%    passed    100.00%
+ 508  |GA-EHC-048V                                                          3.70%    passed     97.40%
+ 509  |GA-EHC-030D                                                          0.69%    passed    100.00%
+ 510  |GA-EHC-040N                                                          0.68%    passed    100.00%
+ 511  |GA-EHC-051Y                                                          5.21%    passed     99.78%
+ 512  |GA-EHC-054B                                                          0.97%    passed     99.96%
+ 513  |GA-EHC-097S                                                          1.12%    passed     99.79%
+ 514  |GA-EHC-035I                                                          1.72%    passed     99.85%
+ 515  |GA-EHC-053A                                                          0.81%    passed     99.97%
+ 516  |GA-EHC-086H                                                          0.68%    passed    100.00%
+ 517  |GA-EHC-023W                                                          1.09%    passed     99.85%
+ 518  |GA-EHC-111G                                                          0.68%    passed    100.00%
+ 519  |GA-EHC-042P                                                          0.68%    passed    100.00%
+ 520  |GA-EHC-052Z                                                          0.87%    passed     99.98%
+ 521  |GA-EHC-037K                                                          0.68%    passed    100.00%
+ 522  |GA-EHC-022V                                                          0.77%    passed     99.99%
+ 523  |GA-EHC-047U                                                          0.68%    passed    100.00%
+ 524  |GA-EHC-033G                                                          0.68%    passed    100.00%
+ 525  |GA-EHC-009I                                                          0.68%    passed    100.00%
+ 526  |GA-EHC-038L                                                          0.68%    passed    100.00%
+ 527  |GA-EHC-043Q                                                          1.00%    passed    100.00%
+ 528  |GA-EHC-032F                                                          1.03%    passed     99.98%
+****  TOTAL                                                                 0.83%  0 sequences failed composition chi2 test (p-value<5%; df=3)
 NOTE: hCoV-19/USA/NY-WC-13741-01/2020|EPI_ISL_534731|2020-03-12 is identical to hCoV-19/Australia/VIC28/2020|EPI_ISL_419747|2020-03-10 but kept for subsequent analysis
 NOTE: hCoV-19/USA/GA_1445/2020|EPI_ISL_420788|2020-03-04 is identical to hCoV-19/USA/GA_1320/2020|EPI_ISL_420786|2020-03-03 but kept for subsequent analysis
 NOTE: hCoV-19/Australia/VIC103/2020|EPI_ISL_419814|2020-03-17 is identical to hCoV-19/Australia/VIC56/2020|EPI_ISL_419777|2020-03-12 but kept for subsequent analysis
@@ -708,118 +710,140 @@ Alignment was printed to data/19B_subclade/19B_subclade_family.uniqueseq.phy
 For your convenience alignment with unique sequences printed to data/19B_subclade/19B_subclade_family.uniqueseq.phy
 
 Creating fast initial parsimony tree by random order stepwise addition...
-0.380 seconds, parsimony score: 406 (based on 379 sites)
+0.183 seconds, parsimony score: 409 (based on 383 sites)
 Perform fast likelihood tree search using GTR+I+G model...
 Estimate model parameters (epsilon = 5.000)
 Perform nearest neighbor interchange...
 Estimate model parameters (epsilon = 1.000)
-1. Initial log-likelihood: -44823.734
-Optimal log-likelihood: -44823.716
-Rate parameters:  A-C: 0.28009  A-G: 1.37351  A-T: 0.36955  C-G: 0.24991  C-T: 3.88384  G-T: 1.00000
+1. Initial log-likelihood: -44853.344
+Optimal log-likelihood: -44853.332
+Rate parameters:  A-C: 0.28601  A-G: 1.40229  A-T: 0.37612  C-G: 0.25587  C-T: 4.02491  G-T: 1.00000
 Base frequencies:  A: 0.299  C: 0.184  G: 0.196  T: 0.321
 Proportion of invariable sites: 0.494
-Gamma shape alpha: 0.096
-Parameters optimization took 1 rounds (0.749 sec)
-Time for fast ML tree search: 3.977 seconds
+Gamma shape alpha: 0.124
+Parameters optimization took 1 rounds (0.287 sec)
+Time for fast ML tree search: 1.488 seconds
 
-NOTE: ModelFinder requires 58 MB RAM!
+NOTE: ModelFinder requires 60 MB RAM!
 ModelFinder will test up to 88 DNA models (sample size: 29903) ...
  No. Model         -LnL         df  AIC          AICc         BIC
-  1  GTR+F         44857.123    817 91348.247    91394.202    98134.015
-  2  GTR+F+I       44823.766    818 91283.532    91329.602    98077.606
-  3  GTR+F+G4      44829.230    818 91294.460    91340.529    98088.534
-  4  GTR+F+I+G4    44823.714    819 91285.428    91331.612    98087.808
-  6  SYM+I         45758.589    815 93147.178    93192.906    99916.335
- 10  TVM+F+I       44856.348    817 91346.695    91392.651    98132.464
- 14  TVMe+I        45792.000    814 93212.000    93257.614    99972.851
- 18  TIM3+F+I      44834.087    816 91300.174    91346.016    98077.637
- 22  TIM3e+I       45764.997    813 93155.995    93201.495    99908.540
- 26  TIM2+F+I      44834.050    816 91300.099    91345.941    98077.562
- 30  TIM2e+I       45776.642    813 93179.285    93224.785    99931.830
- 34  TIM+F+I       44835.772    816 91303.543    91349.385    98081.006
- 38  TIMe+I        45776.116    813 93178.233    93223.733    99930.778
- 42  TPM3u+F+I     44866.786    815 91363.572    91409.299    98132.729
- 46  TPM3+F+I      44866.786    815 91363.572    91409.299    98132.729
- 50  TPM2u+F+I     44866.975    815 91363.950    91409.678    98133.107
- 54  TPM2+F+I      44866.975    815 91363.950    91409.678    98133.107
- 58  K3Pu+F+I      44868.858    815 91367.716    91413.444    98136.873
- 62  K3P+I         45809.125    812 93242.250    93287.637    99986.490
- 66  TN+F+I        44841.650    815 91313.300    91359.028    98082.457
- 70  TNe+I         45780.364    812 93184.727    93230.115    99928.967
- 74  HKY+F+I       44874.639    814 91377.278    91422.892    98138.129
- 78  K2P+I         45813.451    811 93248.902    93294.176    99984.836
- 82  F81+F+I       45009.288    813 91644.575    91690.076    98397.121
- 86  JC+I          45941.091    810 93502.182    93547.343    100229.811
+  1  GTR+F         44884.092    821 91410.183    91456.596    98229.175
+  2  GTR+F+I       44853.423    822 91350.846    91397.374    98178.143
+  3  GTR+F+G4      44857.864    822 91359.727    91406.254    98187.024
+  4  GTR+F+I+G4    44853.330    823 91352.659    91399.302    98188.262
+  6  SYM+I         45791.102    819 93220.204    93266.388    100022.584
+  7  SYM+G4        45800.816    819 93239.633    93285.816    100042.012
+ 10  TVM+F+I       44887.589    821 91417.177    91463.590    98236.169
+ 11  TVM+F+G4      44893.453    821 91428.906    91475.318    98247.897
+ 14  TVMe+I        45825.965    818 93287.929    93333.999    100082.003
+ 15  TVMe+G4       45836.231    818 93308.461    93354.530    100102.535
+ 18  TIM3+F+I      44863.306    820 91366.613    91412.911    98177.298
+ 19  TIM3+F+G4     44867.954    820 91375.907    91422.205    98186.593
+ 22  TIM3e+I       45796.980    817 93227.959    93273.914    100013.727
+ 23  TIM3e+G4      45806.903    817 93247.805    93293.761    100033.574
+ 26  TIM2+F+I      44863.217    820 91366.435    91412.733    98177.120
+ 27  TIM2+F+G4     44866.955    820 91373.909    91420.207    98184.595
+ 30  TIM2e+I       45808.525    817 93251.051    93297.006    100036.819
+ 31  TIM2e+G4      45815.690    817 93265.380    93311.336    100051.149
+ 34  TIM+F+I       44864.942    820 91369.885    91416.183    98180.570
+ 35  TIM+F+G4      44869.173    820 91378.347    91424.645    98189.033
+ 38  TIMe+I        45807.901    817 93249.802    93295.757    100035.570
+ 39  TIMe+G4       45815.404    817 93264.808    93310.763    100050.576
+ 42  TPM3u+F+I     44897.584    819 91433.168    91479.352    98235.548
+ 43  TPM3u+F+G4    44903.652    819 91445.304    91491.488    98247.684
+ 46  TPM3+F+I      44897.584    819 91433.168    91479.352    98235.548
+ 47  TPM3+F+G4     44903.652    819 91445.304    91491.488    98247.684
+ 50  TPM2u+F+I     44897.732    819 91433.464    91479.647    98235.843
+ 51  TPM2u+F+G4    44902.619    819 91443.237    91489.421    98245.617
+ 54  TPM2+F+I      44897.732    819 91433.464    91479.647    98235.843
+ 55  TPM2+F+G4     44902.619    819 91443.237    91489.421    98245.617
+ 58  K3Pu+F+I      44899.515    819 91437.030    91483.214    98239.410
+ 59  K3Pu+F+G4     44904.441    819 91446.883    91493.067    98249.263
+ 62  K3P+I         45842.478    816 93316.956    93362.797    100094.418
+ 63  K3P+G4        45850.653    816 93333.306    93379.147    100110.769
+ 66  TN+F+I        44870.582    819 91379.164    91425.348    98181.544
+ 67  TN+F+G4       44874.455    819 91386.910    91433.094    98189.290
+ 70  TNe+I         45811.984    816 93255.968    93301.810    100033.431
+ 71  TNe+G4        45819.466    816 93270.933    93316.774    100048.395
+ 74  HKY+F+I       44905.096    818 91446.192    91492.261    98240.266
+ 75  HKY+F+G4      44910.150    818 91456.300    91502.370    98250.374
+ 78  K2P+I         45846.564    815 93323.128    93368.856    100092.285
+ 79  K2P+G4        45854.727    815 93339.454    93385.182    100108.611
+ 82  F81+F+I       45043.995    817 91721.989    91767.944    98507.757
+ 83  F81+F+G4      45050.560    817 91735.120    91781.076    98520.889
+ 86  JC+I          45978.187    814 93584.373    93629.987    100345.225
+ 87  JC+G4         45986.337    814 93600.674    93646.288    100361.525
 Akaike Information Criterion:           GTR+F+I
 Corrected Akaike Information Criterion: GTR+F+I
 Bayesian Information Criterion:         TIM2+F+I
 Best-fit model: TIM2+F+I chosen according to BIC
 
 All model information printed to data/19B_subclade/19B_subclade_family.model.gz
-CPU time for ModelFinder: 42.090 seconds (0h:0m:42s)
-Wall-clock time for ModelFinder: 16.723 seconds (0h:0m:16s)
+CPU time for ModelFinder: 72.962 seconds (0h:1m:12s)
+Wall-clock time for ModelFinder: 18.677 seconds (0h:0m:18s)
 
-NOTE: 14 MB RAM (0 GB) is required!
+NOTE: 15 MB RAM (0 GB) is required!
 Estimate model parameters (epsilon = 0.100)
-1. Initial log-likelihood: -44834.050
-Optimal log-likelihood: -44834.035
-Rate parameters:  A-C: 0.48857  A-G: 2.06730  A-T: 0.48857  C-G: 1.00000  C-T: 5.75887  G-T: 1.00000
+1. Initial log-likelihood: -44863.217
+Optimal log-likelihood: -44863.215
+Rate parameters:  A-C: 0.48605  A-G: 1.99004  A-T: 0.48605  C-G: 1.00000  C-T: 5.84735  G-T: 1.00000
 Base frequencies:  A: 0.299  C: 0.184  G: 0.196  T: 0.321
-Proportion of invariable sites: 0.867
-Parameters optimization took 1 rounds (0.374 sec)
-Computing ML distances based on estimated model parameters... 8.482 sec
-Computing BIONJ tree...
-0.388 seconds
-Log-likelihood of BIONJ tree: -44849.285
+Proportion of invariable sites: 0.859
+Parameters optimization took 1 rounds (0.076 sec)
+Computing ML distances based on estimated model parameters...
+Computing ML distances took 0.329703 sec (of wall-clock time) 1.311446 sec(of CPU time)
+Computing RapidNJ tree took 0.015633 sec (of wall-clock time) 0.071182 sec (of CPU time)
+Log-likelihood of RapidNJ tree: -44891.377
 --------------------------------------------------------------------
 |             INITIALIZING CANDIDATE TREE SET                      |
 --------------------------------------------------------------------
-Generating 98 parsimony trees... 13.500 second
-Computing log-likelihood of 98 initial trees ... 7.256 seconds
-Current best score: -44822.748
+Generating 98 parsimony trees... 5.310 second
+Computing log-likelihood of 98 initial trees ... 1.750 seconds
+Current best score: -44863.215
 
 Do NNI search on 20 best initial trees
 Estimate model parameters (epsilon = 0.100)
-BETTER TREE FOUND at iteration 1: -44822.637
-Iteration 10 / LogL: -44824.050 / Time: 0h:0m:38s
-Iteration 20 / LogL: -44825.184 / Time: 0h:0m:53s
+BETTER TREE FOUND at iteration 1: -44863.182
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 2: -44863.136
+Iteration 10 / LogL: -44864.433 / Time: 0h:0m:10s
+Iteration 20 / LogL: -44865.169 / Time: 0h:0m:12s
 Finish initializing candidate tree set (20)
-Current best tree score: -44822.637 / CPU time: 50.171
+Current best tree score: -44863.136 / CPU time: 11.920
 Number of iterations: 20
 --------------------------------------------------------------------
 |               OPTIMIZING CANDIDATE TREE SET                      |
 --------------------------------------------------------------------
-Iteration 30 / LogL: -44871.510 / Time: 0h:1m:13s (0h:2m:58s left)
-Iteration 40 / LogL: -44840.909 / Time: 0h:1m:36s (0h:2m:30s left)
-Iteration 50 / LogL: -44839.603 / Time: 0h:1m:57s (0h:2m:1s left)
-Iteration 60 / LogL: -44831.614 / Time: 0h:2m:16s (0h:1m:34s left)
-Iteration 70 / LogL: -44859.482 / Time: 0h:2m:40s (0h:1m:12s left)
-Iteration 80 / LogL: -44858.209 / Time: 0h:3m:2s (0h:0m:48s left)
-Iteration 90 / LogL: -44879.735 / Time: 0h:3m:22s (0h:0m:25s left)
-Iteration 100 / LogL: -44834.036 / Time: 0h:3m:47s (0h:0m:2s left)
-TREE SEARCH COMPLETED AFTER 102 ITERATIONS / Time: 0h:3m:52s
+Iteration 30 / LogL: -44875.859 / Time: 0h:0m:16s (0h:0m:40s left)
+Iteration 40 / LogL: -44877.847 / Time: 0h:0m:19s (0h:0m:30s left)
+Iteration 50 / LogL: -44932.024 / Time: 0h:0m:22s (0h:0m:24s left)
+Iteration 60 / LogL: -44874.824 / Time: 0h:0m:26s (0h:0m:18s left)
+Iteration 70 / LogL: -44880.767 / Time: 0h:0m:29s (0h:0m:13s left)
+Iteration 80 / LogL: -44866.939 / Time: 0h:0m:32s (0h:0m:9s left)
+Iteration 90 / LogL: -44896.339 / Time: 0h:0m:36s (0h:0m:4s left)
+Iteration 100 / LogL: -44868.471 / Time: 0h:0m:39s (0h:0m:0s left)
+TREE SEARCH COMPLETED AFTER 103 ITERATIONS / Time: 0h:0m:40s
 
 --------------------------------------------------------------------
 |                    FINALIZING TREE SEARCH                        |
 --------------------------------------------------------------------
 Performs final model parameters optimization
 Estimate model parameters (epsilon = 0.010)
-1. Initial log-likelihood: -44822.637
-2. Current log-likelihood: -44822.622
-Optimal log-likelihood: -44822.612
-Rate parameters:  A-C: 0.49864  A-G: 2.02886  A-T: 0.49864  C-G: 1.00000  C-T: 5.76265  G-T: 1.00000
+1. Initial log-likelihood: -44863.136
+Optimal log-likelihood: -44863.135
+Rate parameters:  A-C: 0.49196  A-G: 1.99550  A-T: 0.49196  C-G: 1.00000  C-T: 5.83821  G-T: 1.00000
 Base frequencies:  A: 0.299  C: 0.184  G: 0.196  T: 0.321
-Proportion of invariable sites: 0.862
-Parameters optimization took 2 rounds (0.796 sec)
-BEST SCORE FOUND : -44822.612
-Collapsing near-zero internal branches... 322 collapsed
+Proportion of invariable sites: 0.859
+Parameters optimization took 1 rounds (0.085 sec)
+BEST SCORE FOUND : -44863.135
+Collapsing near-zero internal branches... 324 collapsed
 Total tree length: 0.014
 
-Total number of iterations: 102
-CPU time used for tree search: 330.759 sec (0h:5m:30s)
-Wall-clock time used for tree search: 229.034 sec (0h:3m:49s)
-Total CPU time used: 342.776 sec (0h:5m:42s)
-Total wall-clock time used: 233.433 sec (0h:3m:53s)
+Total number of iterations: 103
+CPU time used for tree search: 157.061 sec (0h:2m:37s)
+Wall-clock time used for tree search: 39.882 sec (0h:0m:39s)
+Total CPU time used: 160.161 sec (0h:2m:40s)
+Total wall-clock time used: 40.634 sec (0h:0m:40s)
 
 Analysis results written to: 
   IQ-TREE report:                data/19B_subclade/19B_subclade_family.iqtree
@@ -827,4 +851,4 @@ Analysis results written to:
   Likelihood distances:          data/19B_subclade/19B_subclade_family.mldist
   Screen log file:               data/19B_subclade/19B_subclade_family.log
 
-Date and Time: Fri Apr  9 13:52:42 2021
+Date and Time: Thu Aug 19 16:25:45 2021

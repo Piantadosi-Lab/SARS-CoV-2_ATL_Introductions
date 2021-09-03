@@ -98,8 +98,8 @@ def plot_annotated_beast(ax, tree_file=None, plot_config=None, annotate_mrca_fil
 		focus_tips = \
 			[i for i in myTree.Objects if 
 				i.branchType == 'leaf' and i.name.split('|')[1] in focus_tip_names]
-		nodes_to_annotate = [myTree.commonAncestor(focus_tips), 
-			myTree.commonAncestor(focus_tips).parent]
+		nodes_to_annotate = [myTree.commonAncestor(focus_tips).parent, 
+			myTree.commonAncestor(focus_tips).parent.parent]
 			#myTree.commonAncestor(focus_tips).parent.parent]
 		print(nodes_to_annotate)
 	else:

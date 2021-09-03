@@ -1,0 +1,8 @@
+{"colors": 
+    { "base": "#575c66", "GA": "#8FBCBB",
+     "traveler": "#D070B9", 
+        "A": "#825665", "A.1": "#735682", 
+        "A.3": "#7D95AC", "B.1": "#9CC8A8", "Other (B)": "#FAEE95"}, 
+   "min_size": 7,
+	"out_name": "figures/ga_pango_lineages",
+    "effects": "[path_effects.Stroke(linewidth=0.5, foreground=plot_config['colors']['base'])]"}

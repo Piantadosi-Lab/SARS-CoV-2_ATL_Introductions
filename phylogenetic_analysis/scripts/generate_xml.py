@@ -132,6 +132,7 @@ def generate_xml():
     n_traits = int(len(set(trait_dict.values())))
     n_traits_less_1 = int(n_traits -1)
     n_trait_dimensions = int(n_traits*(n_traits-1)/2)
+    n_rate_dimensions = str(int(2*len(seqs) - 2))
     with open(args.xmlTemplate, 'r') as infile:
             template = infile.read()
     template = template.replace('<!-- ALN_NAME -->', args.alnName)
@@ -145,6 +146,7 @@ def generate_xml():
     template = template.replace('<!-- N_TRAIT_DIMENSIONS -->', str(n_trait_dimensions))
     template = template.replace('<!-- N_TRAIT_DIMENSIONS/4 -->', str(int(n_trait_dimensions/4)))
     template = template.replace('<!-- TRAIT_FREQS -->', str(1/n_traits))
+    template = template.replace('<!-- N_RATE_DIMENSIONS -->', n_rate_dimensions)
     with open(args.outName+'.xml', 'w') as outfile:
         outfile.write(template)
 

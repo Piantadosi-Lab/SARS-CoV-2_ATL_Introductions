@@ -34,7 +34,7 @@
         <parameter id="kappa.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" lower="0.0" name="stateNode">5.0</parameter>
         <parameter id="ucldMean.c:<!-- ALN_NAME -->" spec="parameter.RealParameter" name="stateNode">0.002</parameter>
         <parameter id="ucldStdev.c:<!-- ALN_NAME -->" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.1</parameter>
-        <stateNode id="rateCategories.c:<!-- ALN_NAME -->" spec="parameter.IntegerParameter" dimension="1808">1</stateNode>
+        <stateNode id="rateCategories.c:<!-- ALN_NAME -->" spec="parameter.IntegerParameter" dimension="<!-- N_RATE_DIMENSIONS -->">1</stateNode>
         <parameter id="freqParameter.s:<!-- ALN_NAME -->" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
         <stateNode id="rateIndicator.s:<!-- TRAIT_NAME -->" spec="parameter.BooleanParameter" dimension="<!-- N_TRAIT_DIMENSIONS -->">true</stateNode>
         <parameter id="relativeGeoRates.s:<!-- TRAIT_NAME -->" spec="parameter.RealParameter" dimension="<!-- N_TRAIT_DIMENSIONS -->" name="stateNode">1.0</parameter>

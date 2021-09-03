@@ -7,6 +7,9 @@ import argparse
 def get_seqs(seqs=None, sequenceField=1, sequenceSep='|',
   getSeqs=None, getSeqsCol=0, getSeqsSep='|', getSeqsField=1, 
   exclude=False, formatNames=None, outName='filtered_seqs'):
+	print(getSeqsSep)
+	print(pd.read_csv(getSeqs, sep='\t', header=None)[getSeqsCol])
+	print(pd.read_csv(getSeqs, sep='\t', header=None)[getSeqsCol].str.split(getSeqsSep))
 	get_seqs = set(pd.read_csv(getSeqs, sep='\t', header=None)[getSeqsCol].str.split(getSeqsSep, expand=True)[getSeqsField])
 	orig_seqs = list(SeqIO.parse(seqs, 'fasta'))
 	if formatNames:

@@ -81,8 +81,15 @@ def plot_count_seqs_time(ax, match_profile_file=None,
 	n_per_week.plot.area(ax=ax, colormap=cm, alpha=0.95)
 	ax.set_ylabel('Sequences/Wk')
 	ax.set_xlabel('Date (2020)')
-	font_size = 10+int(ax.figure.bbox.height*0.01)*1.5
+	font_size = 10+int(ax.figure.bbox.height*0.01)*3.5
 	ax_height = (ax.get_position().y1 - ax.get_position().y0) * ax.figure.bbox.height
+	for col_idx, col in enumerate(col_order[::-1]):
+		ax.text(0.69, 0.9-(1.35*font_size/ax_height)*col_idx, 
+			col, color=plot_config['colors'][col], 
+			transform=ax.transAxes,
+			size=font_size, 
+			path_effects=plot_config['effects'])
+	'''
 	for col_idx, col in enumerate(col_order[0:4]):
 		ax.text(0.53, 0.85-(1.35*font_size/ax_height)*col_idx, 
 			col, color=plot_config['colors'][col], 
@@ -95,6 +102,7 @@ def plot_count_seqs_time(ax, match_profile_file=None,
 			transform=ax.transAxes,
 			size=font_size, 
 			path_effects=plot_config['effects'])
+	'''
 	ax.get_legend().remove()
 	x_ticks = [
 		datetime.datetime.strptime('2020-03-01', '%Y-%m-%d'),
