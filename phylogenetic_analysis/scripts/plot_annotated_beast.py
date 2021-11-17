@@ -11,7 +11,7 @@ import string
 import json
 import datetime
 import pandas as pd
-from utils import plot_style
+from utils import plot_style, datetime_from_numeric
 
 
 def import_tree(tree_file, plot_config):
@@ -49,11 +49,11 @@ def annotate_nodes(ax, mySubTree, xSpan, ySpan, nodes_to_annotate, plot_config):
 	for node in nodes_to_annotate: 
 		print(node)
 		# plot node timing confidence intervals
-		print(plot_config['max_date'] - node.traits["height"])
+		print(datetime_from_numeric(plot_config['max_date'] - node.traits["height"]))
 		xmin = plot_config['max_date'] - node.traits["height_95%_HPD"][1]
 		xmax = plot_config['max_date'] - node.traits["height_95%_HPD"][0]
-		print(xmin)
-		print(xmax)
+		print(datetime_from_numeric(xmin))
+		print(datetime_from_numeric(xmax))
 		ax.add_patch(Rectangle((xmin,node.y-0.01*mySubTree.ySpan),
 			xmax-xmin, 0.02*mySubTree.ySpan,
 			facecolor=plot_config['colors'][node.traits['location']],
@@ -82,9 +82,14 @@ def annotate_nodes(ax, mySubTree, xSpan, ySpan, nodes_to_annotate, plot_config):
 			radius=0.5, frame=False,
 			wedgeprops={"edgecolor":plot_config['colors']['base'],'linewidth': 1},
 			normalize=False)
-		ax.text(node.absoluteTime - xSpan*0.06, node.y-ySpan*0.06, 
-			round(node.traits['posterior'], 2), 
-			color=plot_config['colors']['base'])
+		axins.text(-0.8, -0.4, 
+			round(node.traits['posterior'], 1), 
+			color=plot_config['colors']['base'], size=10, va='center', ha='center')
+		print(node.traits['posterior'])
+		print(round(node.traits['posterior'], 1))
+		#ax.text(node.absoluteTime - xSpan*0.07, node.y, 
+		#	round(node.traits['posterior'], 1), 
+		#	color=plot_config['colors']['base'], size=10, va='center')
 	return(ax)
 
 
@@ -99,7 +104,8 @@ def plot_annotated_beast(ax, tree_file=None, plot_config=None, annotate_mrca_fil
 			[i for i in myTree.Objects if 
 				i.branchType == 'leaf' and i.name.split('|')[1] in focus_tip_names]
 		nodes_to_annotate = [myTree.commonAncestor(focus_tips).parent, 
-			myTree.commonAncestor(focus_tips).parent.parent]
+			myTree.commonAncestor(focus_tips).parent.parent,
+			myTree.commonAncestor(focus_tips).parent.parent.parent]
 			#myTree.commonAncestor(focus_tips).parent.parent]
 		print(nodes_to_annotate)
 	else:

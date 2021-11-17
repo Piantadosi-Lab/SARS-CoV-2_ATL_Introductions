@@ -217,6 +217,11 @@ awk -F'\t' 'FNR==NR {split($1, b, "|"); a[b[2]]=$2; next}{print $0"\t"a[$2]}' \
 # get metadata for just GA included sequences
 grep "\tGA\t" data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
     > data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv
+# subset metadata to just accessions
+awk -F'\t' '{print $1"\t"$2}' \
+    data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
+    > tables/weighted_downsampling_included.tsv
+
 # get fasta of just GA included sequences
 python3 scripts/get_seqs.py \
     --seqs data/weighted_downsampling/ga_focused_aligned_masked_weighted.fasta \
@@ -291,7 +296,7 @@ python3 scripts/plot_annotated_tree.py \
     --treeBootstrapDir "data/weighted_downsampling/ga_focused_aligned_masked_weighted.ufboot_tres/*/*_importations.csv" \
     --config config/annotated_tree.json \
     --metadata data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
-    --travelData data/ga_travel_seqs.tsv
+    --travelData <(awk -F'\t' '{print $2}' data/ga_travel_seqs.tsv)
     
 
 # plot ML divergence tree
@@ -422,6 +427,7 @@ cat <(awk -F'\t' '{if ($5=="USA") print $0}' data/19B_subclade/19B_subclade_fami
         awk -F'\t' '{split($3,a,"-"); if (a[2] < 3) print $0}') \
     > data/19B_subclade/19B_subclade_beast_include.tsv
 
+# subset to just name and accessions for tables 
 # note spelling mistake in alnName parameter
 python3 scripts/generate_xml.py \
     --xmlTemplate config/beast2_trait_template.xml \
@@ -436,7 +442,7 @@ python3 scripts/generate_xml.py \
 # todo add command
 # generate MCC tree
 /Applications/BEAST\ 2.6.3/bin/treeannotator -heights median -b 10  -lowMem \
-    data/19B_subclade/19B_subclade_location_tree_with_trait.trees \
+    data/19B_subclade/19B_subclade19B_subclade_location_tree_with_trait.trees \
     data/19B_subclade/19B_location_mcc.tre
 
 
@@ -445,17 +451,17 @@ python3 scripts/generate_xml.py \
 # --------------------------------------------------------------------------------------#
 # parse set of beast trees
 python3 scripts/parse_beast_trees.py \
-    --trees data/19B_subclade/19B_subclade_location_tree_with_trait.trees
+    --trees data/19B_subclade/19B_subclade19B_subclade_location_tree_with_trait.trees
 
 # gets statistics
 # todo make this more efficient!
 python3 scripts/estimate_n_importations_beast.py \
-    --trees data/19B_subclade/19B_subclade_location_tree_with_trait.pkl \
+    --trees data/19B_subclade/19B_subclade19B_subclade_location_tree_with_trait.pkl \
     --focalRegion GeorgiaUSA
 
 # generate table
 python3 scripts/generate_beast_table.py \
-    --log data/19B_subclade/19B_sublcade.log
+    --log data/19B_subclade/19B_subclade19B_subclade.log
 
 # plot tree
 python3 scripts/plot_annotated_beast.py \
@@ -683,3 +689,6 @@ python3 scripts/calc_distance.py \
 
 # now make the figures 
 Rscript scripts/plot_traveler_dists.R
+
+# and table
+python3 scripts/generate_traveler_table.py --inDir data/travel_analysis --metadata data/ga_travel_seqs.tsv

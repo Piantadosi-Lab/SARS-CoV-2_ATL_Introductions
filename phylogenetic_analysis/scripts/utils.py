@@ -43,7 +43,6 @@ def plot_style(grey='#333333'):
 
 
  
-'''
 
         
 def datetime_from_numeric(numdate):
@@ -70,6 +69,7 @@ def datetime_from_numeric(numdate):
     date = datetime.datetime(int(numdate),1,1) + datetime.timedelta(days=days_elapsed)
     return date
 
+'''
 
 # move to utils
 # from treetime
