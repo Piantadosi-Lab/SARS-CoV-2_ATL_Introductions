@@ -1,8 +1,0 @@
-Parameter,Prior,Estimate (95% HPD)
-Posterior,,-45682 (-45792 -45584)
-Tree height,,0.241 (0.216 0.274)
-Proportion invariant,"Uniform(0, 1)",0.767 (0.476 0.898)
-UCLD Mean,"Normal(1.0e-3, 1.0e-4)",1.16e-03 (1.01e-03 1.32e-03)
-UCLD $σ,Exponential(0.33),0.64 (0.40 0.87)
-κ,"Lognormal(1.0, 1.25)",6.497 (5.043 8.293)
-γ,Exponential(1.0),5.05e-01 (1.08e-03 2.42e+00)

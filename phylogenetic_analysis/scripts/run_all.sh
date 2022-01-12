@@ -217,10 +217,6 @@ awk -F'\t' 'FNR==NR {split($1, b, "|"); a[b[2]]=$2; next}{print $0"\t"a[$2]}' \
 # get metadata for just GA included sequences
 grep "\tGA\t" data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
     > data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv
-# subset metadata to just accessions
-awk -F'\t' '{print $1"\t"$2}' \
-    data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
-    > tables/weighted_downsampling_included.tsv
 
 # get fasta of just GA included sequences
 python3 scripts/get_seqs.py \
@@ -296,7 +292,9 @@ python3 scripts/plot_annotated_tree.py \
     --treeBootstrapDir "data/weighted_downsampling/ga_focused_aligned_masked_weighted.ufboot_tres/*/*_importations.csv" \
     --config config/annotated_tree.json \
     --metadata data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
-    --travelData <(awk -F'\t' '{print $2}' data/ga_travel_seqs.tsv)
+    --travelData <(awk -F'\t' '{print $2}' data/ga_travel_seqs.tsv) \
+    --highlightMRCA data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0_family.tsv
+
     
 
 # plot ML divergence tree
@@ -314,6 +312,13 @@ python3 scripts/estimate_n_importations_ml.py \
 python3 scripts/estimate_n_importations_ml.py\
     --treeBootstrapDir "data/weighted_downsampling/ga_focused_aligned_masked_weighted.ufboot_tres/*/*_importations.csv"  \
     --filterSeqs data/ga_travel_seqs.tsv
+
+# generate table for ML tree
+awk -F'\t' 'FNR==NR{split($1, a, "|"); hash[a[2]]; next} \
+    {label="True"; if ($2 in hash) label="False"; print $1"\t"$2"\t"label}' \
+    data/weighted_downsampling/ga_focused_aligned_masked_weighted.treefile_tres/0/0_bad_seqs.tsv \
+    data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv \
+    > tables/weighted_downsampling_included.tsv
 
 
 # --------------------------------------------------------------------------------------#
@@ -390,12 +395,14 @@ python3 scripts/clock_filter.py \
     --metadataDateCol 2 \
     --metadataIDCol 1 \
     --nIQD 4
-# get metadata
+# get remaining metadata
 awk -F'\t' 'FNR==NR {hash[$1]; next} $2 in hash' \
     <(grep ">" data/19B_subclade/19B_subclade_family_clockfilter.fasta |\
     sed 's/\>//g' | awk -F'|' '{print $2}') \
     ${globalData%.tsv}_aligned.tsv \
     > data/19B_subclade/19B_subclade_family_clockfilter.tsv
+
+
 # rtt plot
 python3 scripts/plot_rtt.py \
     --data data/19B_subclade/19B_subclade_family_rtt.csv\
@@ -409,6 +416,18 @@ python3 scripts/plot_divergence_tree.py \
     --metadataRegionCol 7
 
 
+# second ML plot, this time labeling non-USA tips sampled after March 1st
+# all from 2020 so can just look at month
+python3 scripts/plot_divergence_tree.py \
+    --tree data/19B_subclade/19B_subclade_family_clockfilter.newick \
+    --config config/annotated_divergence_tree2.json \
+    --metadata <(grep "2020-03" data/19B_subclade/19B_subclade_family.tsv | awk -F'\t' '$5!="USA"{print $0}') \
+    --metadataRegionCol 7 \
+    --highlightMRCA <(grep "USA" data/19B_subclade/19B_subclade_family.tsv)
+
+
+
+ 
 # --------------------------------------------------------------------------------------#
 # //// 12. GENERATE BEAST XML FILE AND RUN////
 # --------------------------------------------------------------------------------------#
@@ -427,7 +446,8 @@ cat <(awk -F'\t' '{if ($5=="USA") print $0}' data/19B_subclade/19B_subclade_fami
         awk -F'\t' '{split($3,a,"-"); if (a[2] < 3) print $0}') \
     > data/19B_subclade/19B_subclade_beast_include.tsv
 
-# subset to just name and accessions for tables 
+
+
 # note spelling mistake in alnName parameter
 python3 scripts/generate_xml.py \
     --xmlTemplate config/beast2_trait_template.xml \
@@ -447,11 +467,12 @@ python3 scripts/generate_xml.py \
 
 
 # --------------------------------------------------------------------------------------#
-# //// 13. STATISTICS AND PLOT FOR BEAST ANALYSIS ////
+# //// 14. STATISTICS AND PLOT FOR BEAST ANALYSIS ////
 # --------------------------------------------------------------------------------------#
 # parse set of beast trees
 python3 scripts/parse_beast_trees.py \
     --trees data/19B_subclade/19B_subclade19B_subclade_location_tree_with_trait.trees
+
 
 # gets statistics
 # todo make this more efficient!
@@ -467,10 +488,107 @@ python3 scripts/generate_beast_table.py \
 python3 scripts/plot_annotated_beast.py \
     --tree data/19B_subclade/19B_location_mcc.tre \
     --config config/annotated_beast_tree.json \
-    --treeFocusTips data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0.tsv
+    --treeFocusTips data/weighted_downsampling/ga_focused_aligned_masked_weighted_cluster_0.tsv \
+    --nImportations data/19B_subclade/19B_subclade19B_subclade_location_tree_with_trait_importations_count.tsv
 
 # --------------------------------------------------------------------------------------#
-# //// 14. GET "FUTURE" SEQUENCES WHICH MATCH MUTATIONAL PROFILE of GA 19B subclade ////
+# //// 13. GENERATE RANDOMLY DOWNSAMPLED BEAST RUNS ////
+# --------------------------------------------------------------------------------------#
+python3 scripts/downsample_metadata.py \
+    --metadata data/19B_subclade/19B_subclade_beast_include.tsv \
+    --groupCol 7 \
+    --nPerGroup 5 \
+    --nReps 5 \
+    --timeGroup week \
+    --dateCol 2
+
+
+
+for i in 0 $(seq 4 $END); 
+do 
+python3 scripts/generate_xml.py \
+        --xmlTemplate config/beast2_trait_template.xml \
+        --outName data/19B_subclade/19B_subclade_sampled_5_rep_${i} \
+        --seqs data/19B_subclade/19B_subclade_family_clockfilter.fasta \
+        --metadata data/19B_subclade/19B_subclade_beast_include_sampled_5_rep_${i}.tsv \
+        --metadataTraitCol 7 \
+        --alnName 19B_subclade_sampled_5_rep_${i} \
+        --traitName location 
+done
+
+# run beast on cluster
+
+# get mcc tree for each and process
+for i in 0 $(seq 4 $END); 
+do 
+/Applications/BEAST\ 2.6.3/bin/treeannotator -heights median -b 10  -lowMem \
+    data/19B_subclade/19B_subclade_sampled_5_rep_${i}_location_tree_with_trait.trees \
+    > data/19B_subclade/19B_subclade_sampled_5_rep_${i}_location_tree_with_trait_mcc.tr
+done
+
+
+for i in 0 $(seq 4 $END); 
+do 
+#python3 scripts/parse_beast_trees.py \
+#    --trees data/19B_subclade/19B_subclade_sampled_5_rep_${i}_location_tree_with_trait.trees
+# gets statistics
+# todo make this more efficient!
+python3 scripts/estimate_n_importations_beast.py \
+    --trees data/19B_subclade/19B_subclade_sampled_5_rep_${i}_location_tree_with_trait.pkl \
+    --focalRegion GeorgiaUSA
+done
+
+# combine parsed files
+rm -rf "data/19B_subclade/19B_subclade_sampled_5_rep_*_location_tree_with_trait_importations_count.tsv"
+
+for i in 0 $(seq 4 $END); 
+do 
+awk -F'\t' -v rep=$i '{print rep"\t"$0}' data/19B_subclade/19B_subclade_sampled_5_rep_${i}_location_tree_with_trait_importations_count.tsv \
+    >> "data/19B_subclade/19B_subclade_sampled_5_rep_*_location_tree_with_trait_importations_count.tsv"
+
+done
+
+
+
+# process all downsampled BEAST runs
+python3 scripts/process_downsampled_beast.py \
+    --trees "data/19B_subclade/19B_subclade_sampled_5_rep_*_mcc.tre" \
+    --metadata <(awk -F'\t' '$5=="USA"{print $0}' data/19B_subclade/19B_subclade_beast_include.tsv)
+
+# plot results from downsamples
+python3 scripts/plot_downsampled_beast.py \
+    --downsampleData data/19B_subclade/19B_subclade_sampled_5_rep_*_mcc_parsed.tsv \
+    --config config/downsampled_beast.json \
+    --nIntroductions "data/19B_subclade/19B_subclade_sampled_5_rep_*_location_tree_with_trait_importations_count.tsv"
+
+# generate included sequences table
+awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $0"\t"label}' \
+    data/19B_subclade/19B_subclade_beast_include_sampled_5_rep_4.tsv \
+    <(awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $0"\t"label}' \
+        data/19B_subclade/19B_subclade_beast_include_sampled_5_rep_3.tsv \
+        <(awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $0"\t"label}' \
+            data/19B_subclade/19B_subclade_beast_include_sampled_5_rep_2.tsv \
+            <(awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $0"\t"label}' \
+                data/19B_subclade/19B_subclade_beast_include_sampled_5_rep_1.tsv \
+                <(awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $0"\t"label}' \
+                    data/19B_subclade/19B_subclade_beast_include_sampled_5_rep_0.tsv \
+                    <(awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $0"\t"label}' \
+                        data/19B_subclade/19B_subclade_beast_include.tsv \
+                        <(awk -F'\t' 'FNR==NR{hash[$2]; next}{label="False"; if ($2 in hash) label="True"; print $1"\t"$2"\t"label}' \
+                            data/19B_subclade/19B_subclade_family_clockfilter.tsv  \
+                            data/19B_subclade/19B_subclade_family.tsv)))))) \
+    > tables/19B_subclade_family.tsv
+
+# generate results table
+for i in 0 $(seq 4 $END); 
+do 
+    python3 scripts/generate_beast_table.py \
+    --log  data/19B_subclade/19B_subclade_sampled_5_rep_${i}.log
+done
+
+
+# --------------------------------------------------------------------------------------#
+# //// 15. GET "FUTURE" SEQUENCES WHICH MATCH MUTATIONAL PROFILE of GA 19B subclade ////
 # --------------------------------------------------------------------------------------#
 # need to align and mask L84S sequences
 # contains all "compmlete" "high coverage" "sampling date complete" genomes
@@ -532,6 +650,11 @@ head -n 2 data/l84s/l84s_19B_subclade_match_focal_snps.tsv | \
     awk -F'\t' '{print $3}'\
     > data/l84s/l84s_19B_subclade_earliest.tsv
 
+# subset to just first two column for table
+awk -F'\t' '{print $1"\t"$2}' \
+    data/l84s/l84s_19B_subclade_match_focal_snps.tsv \
+    > tables/l84s_19B_subclade_match_focal_snps.tsv
+
 python3 scripts/compare_seqs.py \
     --seqs data/l84s/l84s_filtered_aligned_ref_filtered_masked_noref.fasta \
     --focalSeqs data/l84s/l84s_19B_subclade_earliest.tsv \
@@ -540,7 +663,7 @@ python3 scripts/compare_seqs.py \
 
 
 # --------------------------------------------------------------------------------------#
-# //// 15. PLOT NUMBER OF MATCHING SEQUENCES PER WEEK ////
+# //// 16. PLOT NUMBER OF MATCHING SEQUENCES PER WEEK ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/plot_19B_subclade.py \
     --mutationalProfile data/weighted_downsampling/19B_subclade_focal_snps_shared.tsv \
@@ -549,7 +672,7 @@ python3 scripts/plot_19B_subclade.py \
 
 
 # --------------------------------------------------------------------------------------#
-# //// 16. DOWNSAMPLE THE GLOBAL SEQUENCES BASED ON SAMPLING DATE ////
+# //// 17. DOWNSAMPLE THE GLOBAL SEQUENCES BASED ON SAMPLING DATE ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/downsample_seqs.py \
     --sequences ${globalSeqs%.fasta}_EHC_metadata_aligned_ref_filtered_masked.fasta \
@@ -576,19 +699,20 @@ awk -F'\t' 'FNR==NR {split($1, b, "|"); a[b[2]]=$2; next}{print $0"\t"a[$2]}' \
     > data/temporal_downsampling/ga_focused_aligned_masked_temporal_all_included_seqs.tsv
 
 
+
 # get metadata for just GA included sequences
 grep "\tGA\t" data/temporal_downsampling/ga_focused_aligned_masked_temporal_all_included_seqs.tsv \
     > data/temporal_downsampling/ga_focused_aligned_masked_temporal_ga_included_seqs.tsv
 
 
 # --------------------------------------------------------------------------------------#
-# //// 17. BUILD ML TREE OF TEMPORAL DOWNSAMPLING SEQUENCES ////
+# //// 18. BUILD ML TREE OF TEMPORAL DOWNSAMPLING SEQUENCES ////
 # --------------------------------------------------------------------------------------#
 iqtree2 -redo --polytomy -m TEST -T AUTO -bb 1000 --wbtl -T 4 --prefix data/temporal_downsampling/ga_focused_aligned_masked_temporal -s data/temporal_downsampling/ga_focused_aligned_masked_temporal.fasta
 
 
 # --------------------------------------------------------------------------------------#
-# //// 18. ESTIMATE NUMBER OF IMPORTATIONS BASED ON TEMPORAL ML TREE ////
+# //// 19. ESTIMATE NUMBER OF IMPORTATIONS BASED ON TEMPORAL ML TREE ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/estimate_importations.py \
             --trees data/temporal_downsampling/ga_focused_aligned_masked_temporal.treefile \
@@ -602,7 +726,7 @@ python3 scripts/estimate_importations.py \
             --saveAln 
 
 # --------------------------------------------------------------------------------------#
-# //// 19. REPEAT ON 100 BOOTSTRAP REPLICATES OF TEMPORAL ML TREE ////
+# //// 20. REPEAT ON 100 BOOTSTRAP REPLICATES OF TEMPORAL ML TREE ////
 # --------------------------------------------------------------------------------------#
 refName='EPI_ISL_402125'
 python3 scripts/estimate_importations.py \
@@ -618,7 +742,7 @@ python3 scripts/estimate_importations.py \
 
 
 # --------------------------------------------------------------------------------------#
-# //// 20. PLOT TEMPORAL DOWNSAMPLING TREE ////
+# //// 21. PLOT TEMPORAL DOWNSAMPLING TREE ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/plot_annotated_tree.py \
     --tree data/temporal_downsampling/ga_focused_aligned_masked_temporal.treefile_tres/0/0_refined_time.newick \
@@ -626,7 +750,7 @@ python3 scripts/plot_annotated_tree.py \
     --treeBootstrapDir "data/temporal_downsampling/ga_focused_aligned_masked_temporal.ufboot_tres/*/*_importations.csv" \
     --config config/annotated_temporal_tree.json \
     --metadata data/temporal_downsampling/ga_focused_aligned_masked_temporal_all_included_seqs.tsv \
-    --travelData data/ga_travel_seqs.tsv
+    --travelData <(awk -F'\t' '{print $2}' data/ga_travel_seqs.tsv) 
 
 # plot RTT
 python3 scripts/plot_rtt.py \
@@ -637,9 +761,20 @@ python3 scripts/plot_rtt.py \
 python3 scripts/estimate_n_importations_ml.py \
     --treeBootstrapDir "data/temporal_downsampling/ga_focused_aligned_masked_temporal.ufboot_tres/*/*_importations.csv" 
 
+# generate table
+
+awk -F'\t' 'FNR==NR{split($1, a, "|"); hash[a[2]]; next} \
+    {label="True"; if ($2 in hash) label="False"; print $1"\t"$2"\t"label}' \
+    data/temporal_downsampling/ga_focused_aligned_masked_temporal.treefile_tres/0/0_bad_seqs.tsv \
+    data/temporal_downsampling/ga_focused_aligned_masked_temporal_all_included_seqs.tsv \
+    > tables/temporal_downsampling_included.tsv
+
+
+
+
 
 # --------------------------------------------------------------------------------------#
-# //// 21. GET LIST OF ALL INCLUDED SEQUENCES ////
+# //// 22. GET LIST OF ALL INCLUDED SEQUENCES ////
 # --------------------------------------------------------------------------------------#
 # todo this is not correct! used all sequences
 cat <(awk -F'\t' '{print $2}' data/weighted_downsampling/ga_focused_aligned_masked_weighted_all_included_seqs.tsv | grep -v "GA-EHC") \
@@ -651,14 +786,14 @@ cat <(awk -F'\t' '{print $2}' data/weighted_downsampling/ga_focused_aligned_mask
 
 
 # --------------------------------------------------------------------------------------#
-# //// 22. NUMBER OF CASES AND SEQUENCES OVER TIME ////
+# //// 23. NUMBER OF CASES AND SEQUENCES OVER TIME ////
 # --------------------------------------------------------------------------------------#
 python3 scripts/plot_case_data.py \
     --caseData data/time_series_covid19_confirmed_US.csv \
     --seqData data/weighted_downsampling/ga_focused_aligned_masked_weighted_ga_included_seqs.tsv
 
 # --------------------------------------------------------------------------------------#
-# //// 23.  TRAVEL ANALYSIS ////
+# //// 24.  TRAVEL ANALYSIS ////
 # --------------------------------------------------------------------------------------#
 # compare to travel regions
 python3 scripts/calc_distance.py \

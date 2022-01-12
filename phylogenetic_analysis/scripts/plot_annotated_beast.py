@@ -12,7 +12,7 @@ import json
 import datetime
 import pandas as pd
 from utils import plot_style, datetime_from_numeric
-
+import seaborn as sns
 
 def import_tree(tree_file, plot_config):
 	myTree = bt.loadNexus(tree_file, absoluteTime=False)
@@ -160,6 +160,7 @@ def run():
 		help='list of sequences to focus on')
 	parser.add_argument('--config',
 		help='json file with config information (labels, colors, etc.)')
+	parser.add_argument('--nImportations')
 	args = parser.parse_args()
 	plot_style()
 	#args.tree = 'data/19B_subclade/19B_location_mcc_median.tre'
@@ -188,8 +189,16 @@ def run():
         [i.strftime("%m")+'/'+i.strftime("%d") for i in x_ticks]
 	x_ticks = [numeric_date(i) for i in x_ticks]
 
-
-	fig, ax = plt.subplots(figsize=(6.4, 4.8), constrained_layout=True)
+	from collections import Counter
+	n_importations = Counter(pd.read_csv(args.nImportations, header=None)[0].values)
+	total = sum(n_importations.values())
+	print(total)
+	n_importations = {key: value/total for key, value in n_importations.items()}
+	print('HERE')
+	print(n_importations)
+	fig, axs = plt.subplots(1, 2, figsize=(6.4*1.25, 4.8), 
+		constrained_layout=True, gridspec_kw={'width_ratios': [0.7, 0.3]})
+	ax = axs[0]
 	ax, annotated_nodes = plot_annotated_beast(ax, tree_file=args.tree, 
 		plot_config=plot_config, annotate_mrca_file=args.treeFocusTips)
 	ax.set_axisbelow(True)
@@ -199,6 +208,18 @@ def run():
 	ax.set_xlabel('Date (2020)')
 	[ax.spines[loc].set_visible(False) for loc in ['top', 'right', 'left']]
 	ax.set_yticks([])
+	axs[1].bar(n_importations.keys(), n_importations.values(), 
+		facecolor=plot_config['colors']['GeorgiaUSA'], edgecolor='#333333', width=1.0)
+	axs[1].set_xlabel('Number of introductions')
+	axs[1].set_ylabel('Proportion')
+	axs[1].set_aspect(1./axs[1].get_data_ratio())
+	_ = [axs[1].spines[loc].set_visible(False) for loc in ['top', 'right']]
+	x_poss = [0, -0.3]
+	y_poss = [1.0, 1.49]
+	for ax_idx, ax in enumerate(axs):
+		ax.text(x_poss[ax_idx], y_poss[ax_idx], string.ascii_uppercase[ax_idx], transform=ax.transAxes, 
+			size=20, weight='bold', va="top")
+
 	fig.savefig(f'{plot_config["out_name"]}.pdf')
 	plt.close()
 

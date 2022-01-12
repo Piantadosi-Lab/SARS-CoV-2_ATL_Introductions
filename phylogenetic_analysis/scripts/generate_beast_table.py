@@ -41,7 +41,10 @@ def make_table(rows, data, qs, out_path):
     table = [[rows[row]['label'], rows[row]['prior']] for row in rows.keys()]
     table.insert(0, ['Parameter', 'Prior', f'Estimate ({w}% HPD)']) 
     for i, key in enumerate(rows.keys()):
-        dat = data[f'{key}_HPD']
+        row_name = [k for k in data.keys() if key  in k and 'HPD' in k][0]
+        print(key)
+        print(row_name)
+        dat = data[row_name]
         if rows[key]['sci']:
             median = "{:.{}e}".format(dat.median(), rows[key]['decimals'])
             low_limit = "{:.{}e}".format(min(dat), rows[key]['decimals'])
@@ -51,9 +54,9 @@ def make_table(rows, data, qs, out_path):
             low_limit = "{:.{}f}".format(min(dat), rows[key]['decimals'])
             high_limit = "{:.{}f}".format(max(dat), rows[key]['decimals'])
         table[i+1].append(f'{median} ({low_limit} {high_limit})')
-        with open(out_path, 'w') as outfile:
-            writer = csv.writer(outfile)
-            writer.writerows(table)
+    with open(out_path, 'w') as outfile:
+        writer = csv.writer(outfile)
+        writer.writerows(table)
 
 
 def process_results(file_path, burnin, qs):
@@ -84,7 +87,7 @@ def run():
         help='what quantiles to report',
         default=[0.025, 0.5, 0.975], type=float, nargs=3)
     args = parser.parse_args()
-    #args.log = 'data/19B_subclade/19B_subclade.log'
+    #args.log = 'data/19B_subclade/19B_subclade19B_subclade.log'
     table_rows = {  'posterior':    
                         {'label':           'Posterior',
                          'decimals':        0, 
@@ -95,27 +98,27 @@ def run():
                          'decimals':        3,
                          'sci':             False,
                          'prior':           ''},
-                    'proportionInvariant.19B_sublcade':   
+                    'proportionInvariant':   
                         {'label':           'Proportion invariant',
                          'decimals':        3,
                          'sci':             False,
                          'prior':           'Uniform(0, 1)'},
-                    'ucldMean.19B_sublcade':    
+                    'ucldMean':    
                         {'label':           'UCLD Mean',
                          'decimals':        2,
                          'sci':             True,
                          'prior':           f'Normal(1.0e-3, 1.0e-4)'},
-                    'ucldStdev.19B_sublcade':    
+                    'ucldStdev':    
                         {'label':           'UCLD $\N{GREEK SMALL LETTER SIGMA}',
                          'decimals':        2,
                          'sci':             False,
                          'prior':           f'Exponential(0.33)'},
-                    'kappa.19B_sublcade':        
+                    'kappa':        
                         {'label':           f'\N{GREEK SMALL LETTER KAPPA}',
                          'decimals':        3,
                          'sci':             False,
                          'prior':           'Lognormal(1.0, 1.25)'},
-                    'gammaShape.19B_sublcade': 
+                    'gammaShape': 
                         {'label':           f'\N{GREEK SMALL LETTER GAMMA}',
                          'decimals':        2,
                          'sci':             True,

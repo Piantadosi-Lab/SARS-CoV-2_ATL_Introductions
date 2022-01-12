@@ -44,8 +44,7 @@ def run():
 			mrca = new_mrca
 
 	descendant_tips = [i.name for i in mrca.get_terminals()]
-	pd.DataFrame(descendant_tips).to_csv(args.tipNames.split('.')[0]+'_family.tsv', header=None, index=None)
-
+	pd.DataFrame(descendant_tips).to_csv(args.tipNames.split('.')[0]+'_family.tsv', header=None, index=None) 
 
 
 if __name__ == "__main__":

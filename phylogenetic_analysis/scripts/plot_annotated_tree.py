@@ -164,7 +164,7 @@ def import_tree(tree_file, max_date, node_name_len, prioritize_nodes=None, depri
     return(myTree)
 
 
-def plot_tree(ax, tree_file=None, tree_states_file=None, travel_file=None, plot_config=None, branch_widths=[1.5, 0.1, 0.05]):    
+def plot_tree(ax, tree_file=None, tree_states_file=None, travel_file=None, plot_config=None, branch_widths=[1.5, 0.1, 0.05], highlight_mrca=None):    
     tree_states = pd.read_csv(tree_states_file, sep=',')
     tree_states_dict = \
         {i['name']: i['state'] for idx, i in tree_states.iterrows()}
@@ -192,6 +192,15 @@ def plot_tree(ax, tree_file=None, tree_states_file=None, travel_file=None, plot_
         size=lambda k: tip_s_func(k, tip_size, plot_config['colors'], tree_states_dict), 
         colour=lambda k: tip_c_func(k, plot_config['colors'], tree_states_dict),
         outline_colour=plot_config['colors']['base'])
+    if not (highlight_mrca is None):
+        mrca = myTree.commonAncestor(myTree.getExternal(lambda k: k.name in highlight_mrca))
+        print(mrca)
+        print(mrca.absoluteTime)
+        print(mrca.y)
+        ax.scatter([mrca.absoluteTime], [mrca.y], marker="P", zorder=5, 
+            edgecolor=plot_config['colors']['base'],
+            color=plot_config['colors']['highlight_mrca'],
+            s=250)
     if travel_file != None:
         travel_tips = set(pd.read_csv(travel_file, header=None)[0])
         myTree.plotPoints(ax, 
@@ -246,8 +255,8 @@ def add_heatmap(ax, tree=None, metadata_file=None, plot_config=None, max_val=1.0
     return(ax, max_val+width)
 
 
-def plot_clade_distribution(ax, metadata_file, plot_config):
-    metadata = pd.read_csv(metadata_file, sep='\t', header=None)
+def plot_clade_distribution(ax, metadata_file, metadata_delim, plot_config):
+    metadata = pd.read_csv(metadata_file, sep=metadata_delim, header=None)
     metadata = metadata[metadata[6].isin(plot_config['colors'].keys())]
     metadata['week_end_date'] = pd.to_datetime(metadata[2]).apply(lambda k: k+datetime.timedelta(days= 6 - k.weekday()))
     n_per_week = metadata.groupby([8, 'week_end_date']).size().reset_index()
@@ -287,10 +296,18 @@ def run():
         help='file with importation data from ML tree')
     parser.add_argument('--metadata',
         help='file with metadata')
+    parser.add_argument('--metadataDelim',
+        help='file with metadata',
+        default='\t')
+    parser.add_argument('--metadataIDCol',
+        help='column with id',
+        type=int, 
+        default=0)
     parser.add_argument('--travelData',
         help='file with metadata')
     parser.add_argument('--config',
         help='json file with config information (labels, colors, etc.)')
+    parser.add_argument('--highlightMRCA', help='highlight mrca of this list of sequences')
     args = parser.parse_args()
         #args.tree = 'data/weighted_downsampling/ga_focused_aligned_masked_weighted.treefile_tres/0/0_refined_time.newick'
         #args.treeStates = 'data/weighted_downsampling/ga_focused_aligned_masked_weighted.treefile_tres/0/0_refined_node_states.csv'
@@ -337,12 +354,18 @@ def run():
     ax0 = fig.add_subplot(gs[1:6,:])
     ax1 = fig.add_subplot(gs[6,:])
     ax2 = fig.add_subplot(gs[6,14:])
-    ax00 = plot_clade_distribution(ax00, args.metadata, plot_config)
+    ax00 = plot_clade_distribution(ax00, args.metadata, args.metadataDelim, plot_config)
     [ax00.spines[loc].set_visible(False) for loc in ['top', 'right']]
+
+    if args.highlightMRCA:
+        highlight_mrca = \
+            pd.read_csv(args.highlightMRCA, sep=args.metadataDelim,
+                header=None)[args.metadataIDCol].values  
+        print(highlight_mrca)      
 
     ax0, x_lims, myTree = plot_tree(ax0, tree_file=args.tree, travel_file=args.travelData, 
         tree_states_file=args.treeStates, 
-        plot_config=plot_config, branch_widths=[2, 0.02, 0.01])
+        plot_config=plot_config, branch_widths=[2, 0.02, 0.01], highlight_mrca=highlight_mrca)
     tree_name_dict = \
        {i.name.split(args.treeNameSep)[args.treeNameField]: i.name for 
            i in myTree.Objects if i.branchType == 'leaf'}

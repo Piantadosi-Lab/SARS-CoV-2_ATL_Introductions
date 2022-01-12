@@ -46,7 +46,7 @@ def import_tree(tree_file, plot_config):
 	return(myTree)
 
 
-def plot_divergence_tree(ax, tree_file=None, tree_name_sep='|', tree_name_field=1, trait_dict=None, plot_config=None):    
+def plot_divergence_tree(ax, tree_file=None, tree_name_sep='|', tree_name_field=1, trait_dict=None, plot_config=None, highlight_mrca=None):    
     myTree = bt.loadNewick(tree_file)
     myTree.drawTree()
     xMin = min([i.x for i in myTree.Objects])
@@ -64,6 +64,13 @@ def plot_divergence_tree(ax, tree_file=None, tree_name_sep='|', tree_name_field=
             trait_dict[k.name.split(tree_name_sep)[tree_name_field]] in plot_config['colors'].keys() else 
             plot_config['colors']['base'], 
         outline_colour=plot_config['colors']['base'])
+    # if we want to higlight the mrca, then get that MRCA
+    if not (highlight_mrca is None):
+    	mrca = myTree.commonAncestor(myTree.getExternal(lambda k: k.name.split(tree_name_sep)[tree_name_field] in highlight_mrca))
+    	ax.scatter([mrca.x], [mrca.y], marker="P", zorder=5, 
+    		edgecolor=plot_config['colors']['base'],
+    		color=plot_config['colors']['highlight_mrca'],
+    		s=500)
     ax.set_ylim(-myTree.ySpan*0.01, myTree.ySpan*1.01)
     ax.set_yticks([])
     ax.set_xticks([])
@@ -106,6 +113,7 @@ def run():
 	                    help='which field in split tree names to match to metadata',
 	                    default=1,
 	                    type=int)
+	parser.add_argument('--highlightMRCA')
 	parser.add_argument('--metadata',
 	    help='file with metadata')
 	parser.add_argument('--metadataDelim',
@@ -130,13 +138,21 @@ def run():
 
 
 	metadata = pd.read_csv(args.metadata, sep=args.metadataDelim, header=None)
-	trait_dict = {i[args.metadataIDCol]: i[args.metadataRegionCol] for idx, i in metadata.iterrows()}
+	from collections import defaultdict
+	trait_dict = defaultdict(lambda: None)
+	trait_dict.update({i[args.metadataIDCol]: i[args.metadataRegionCol] for idx, i in metadata.iterrows()})
 
+	print(trait_dict)
+	highlight_mrca=None
+	if args.highlightMRCA:
+		highlight_mrca = \
+			pd.read_csv(args.highlightMRCA, sep=args.metadataDelim,
+				header=None)[args.metadataIDCol].values
 
 	fig, ax = plt.subplots(1,1, figsize=(6.4, 4.8*2), constrained_layout=True)
 	ax = plot_divergence_tree(ax, tree_file=args.tree, 
 		tree_name_sep=args.treeNameSep, tree_name_field=args.treeNameField, 
-		trait_dict=trait_dict, plot_config=plot_config)
+		trait_dict=trait_dict, plot_config=plot_config, highlight_mrca=highlight_mrca)
 	fig.savefig(f'{plot_config["out_name"]}.pdf')
 
 

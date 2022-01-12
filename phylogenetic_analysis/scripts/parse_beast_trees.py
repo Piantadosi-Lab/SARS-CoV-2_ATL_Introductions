@@ -37,7 +37,7 @@ def run():
 	translate_dict = \
 		[i.replace(',\n', '').lstrip().split(' ') for i in trees[translate_range[0]+2:translate_range[1]]]
 	translate_dict = {i[0]: i[1] for i in translate_dict}
-	newick_trees = ['(' + '('.join(i.split('(')[1:]) for i in trees[translate_range[1]+1:]]
+	newick_trees = ['(' + '('.join(i.split('(')[1:]) for i in trees[translate_range[1]+1:] if i[:3] != 'End']
 	discard = int(math.ceil(len(newick_trees)*args.burnin/100))
 	print(f'discarding {args.burnin}%, {discard} trees as burnin')
 	newick_trees = newick_trees[discard:]
@@ -47,6 +47,7 @@ def run():
 	parsed_trees = (translate_dict, biopython_trees)
 	print(len(biopython_trees))
 	pickle.dump(parsed_trees, open('.'.join(args.trees.split('.')[0:-1])+'.pkl', 'wb'))
+
 
 
 if __name__ == '__main__':
